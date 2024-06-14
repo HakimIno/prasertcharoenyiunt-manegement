@@ -17,8 +17,9 @@ export default function Router() {
     const initLine = () => {
         liff.init({ liffId: '2005618139-mAer5ZOK' }, () => {
             if (liff.isLoggedIn()) {
-                setIsAuthentication(liff.isLoggedIn())
+                setIsAuthentication(true);
             } else {
+                setIsAuthentication(false);
                 liff.login();
             }
         }, err => console.error(err));
@@ -27,6 +28,9 @@ export default function Router() {
     useEffect(() => {
         initLine();
     }, []);
+
+    console.log("isAuthentication", isAuthentication);
+
 
     return (
         <Routes>
