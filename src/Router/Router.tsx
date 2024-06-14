@@ -16,20 +16,13 @@ export default function Router() {
     const [isAuthentication, setIsAuthentication] = useState(false)
     const initLine = () => {
         liff.init({ liffId: '2005618139-mAer5ZOK' }, () => {
-            if (liff.isLoggedIn()) {
-                setIsAuthentication(true);
-            } else {
-                setIsAuthentication(false);
-                liff.login();
-            }
+            setIsAuthentication(liff.isLoggedIn())
         }, err => console.error(err));
     }
 
     useEffect(() => {
         initLine();
     }, []);
-
-    console.log("isAuthentication", isAuthentication);
 
 
     return (
@@ -43,7 +36,7 @@ export default function Router() {
                 }
             />
             <Route
-                index
+                path='eslip'
                 element={
                     <PrivateRote authenticated={isAuthentication}>
                         <Main.Eslip />
