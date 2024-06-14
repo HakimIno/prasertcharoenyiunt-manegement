@@ -27,9 +27,9 @@ export default function Login() {
     //     }).catch(err => console.error(err));
     // }
 
-    useEffect(() => {
-        liff.login();
-    }, [])
+    // useEffect(() => {
+    //     liff.login();
+    // }, [])
 
 
     return <LoginContainer>

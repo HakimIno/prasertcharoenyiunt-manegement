@@ -15,8 +15,10 @@ import liff from '@line/liff';
 export default function Router() {
     const [isAuthentication, setIsAuthentication] = useState(false)
     const initLine = () => {
-        liff.init({ liffId: '2005618139-mAer5ZOK' }, () => {
-            setIsAuthentication(liff.isLoggedIn())
+        liff.init({ liffId: '2005618139-mAer5ZOK', withLoginOnExternalBrowser: true }, () => {
+            if (liff.isLoggedIn()) {
+                setIsAuthentication(liff.isLoggedIn());
+            }
         }, err => console.error(err));
     }
 
@@ -36,7 +38,7 @@ export default function Router() {
                 }
             />
             <Route
-                path='eslip'
+                index
                 element={
                     <PrivateRote authenticated={isAuthentication}>
                         <Main.Eslip />
