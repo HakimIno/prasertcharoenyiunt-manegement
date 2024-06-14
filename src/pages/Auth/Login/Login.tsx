@@ -1,7 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
 import { LoginContainer } from './Login.styles';
-import liff from '@line/liff';
-
 export default function Login() {
 
     // const [idToken, setIdToken] = useState("");
