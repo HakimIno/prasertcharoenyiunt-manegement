@@ -3,11 +3,11 @@ import { render } from '@testing-library/preact';
 import '@testing-library/jest-dom/extend-expect';
 
 // COMPONENTS
-import Eslip from './Dashboard';
+import Dashboard from './Dashboard';
 
-describe('Eslip integration test', () => {
-    it('Should render the Eslip component', () => {
-        const { getByText } = render(<Eslip />);
-        expect(getByText('Eslip')).toBeInTheDocument();
+describe('Dashboard integration test', () => {
+    it('Should render the Dashboard component', () => {
+        const { getByText } = render(<Dashboard />);
+        expect(getByText('Dashboard')).toBeInTheDocument();
     });
 });
