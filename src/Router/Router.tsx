@@ -1,31 +1,20 @@
 // GLOBAL
-import { useEffect, useState } from 'preact/hooks';
 import { Routes, Route } from 'react-router-dom';
 
 // ROUTES
 import PublicRoute from './PublicRoute';
-import PrivateRote from './PrivateRoute';
 
 // PAGES
 import Auth from '../pages/Auth';
 import Main from '../pages/Main';
 import Page404 from '../pages/Page404';
-import liff from '@line/liff';
+import { useAuth } from '../context/AuthContext';
+import PrivateRoute from './PrivateRoute';
+import MainLayout from '../pages/Main/Layout';
 
 export default function Router() {
-    const [isAuthentication, setIsAuthentication] = useState(false)
-    const initLine = () => {
-        liff.init({ liffId: '2005618139-mAer5ZOK', withLoginOnExternalBrowser: true }, () => {
-            if (liff.isLoggedIn()) {
-                setIsAuthentication(liff.isLoggedIn());
-            }
-        }, err => console.error(err));
-    }
-
-    useEffect(() => {
-        initLine();
-    }, []);
-
+    const { user, role } = useAuth();
+    const isAuthentication = !!user && (role === "superadmin" || role === "admin");
 
     return (
         <Routes>
@@ -38,19 +27,31 @@ export default function Router() {
                 }
             />
             <Route
-                index
                 element={
-                    <PrivateRote authenticated={isAuthentication}>
-                        <Main.Eslip />
-                    </PrivateRote>
+                    <PrivateRoute authenticated={isAuthentication}>
+                        <MainLayout />
+                    </PrivateRoute>
                 }
-            />
+            >
+                <Route
+                    index
+                    element={<Main.Dashboard />}
+                />
+                <Route
+                    path="users"
+                    element={<Main.Users />}
+                />
+                <Route
+                    path="folders"
+                    element={<Main.Users />}
+                />
+            </Route>
             <Route
                 path="*"
                 element={
-                    <PrivateRote authenticated={isAuthentication}>
+                    <PrivateRoute authenticated={isAuthentication}>
                         <Page404 />
-                    </PrivateRote>
+                    </PrivateRoute>
                 }
             />
         </Routes>

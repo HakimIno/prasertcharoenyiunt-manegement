@@ -1,3 +1,35 @@
+/* Before */
+
+/*  don't use this
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+*/
+
+/* After,
+  when you set 'postcss-import' in your PostCSS configuration,
+   use @import 'tailwindcss/xxx',  
+   don't use @tailwind xxx   */
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* Last import @radix-ui/themes/styles.css */
+@import "@radix-ui/themes/styles.css";
+
+/* Make sure `@import` statements must come first 👆 */
+
+/* If you are using @layer @apply or other tailwindcss nested declarations,
+      maker sure enable 'tailwindcss/nesting' in your PostCSS configuration
+   */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+  }
+}

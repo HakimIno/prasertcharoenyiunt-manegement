@@ -1,3 +1,4 @@
-import Eslip from './Eslip';
+import Dashboard from './Dashboard';
+import Users from './Users';
 
-export default { Eslip };
+export default { Dashboard, Users };
