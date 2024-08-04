@@ -32,7 +32,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, itemsPerPage = 10 
         <div>
             <Table.Root layout="auto" variant="surface">
                 <Table.Header>
-                    <Table.Row className="bg-gray-50">
+                    <Table.Row className="bg-gray-100">
                         <Table.ColumnHeaderCell className="text-[#1a1a1a] font-semibold">ลำดับ</Table.ColumnHeaderCell>
                         {columns.map((column, index) => (
                             <Table.ColumnHeaderCell key={index} className="text-[#1a1a1a] font-semibold">{column.title}</Table.ColumnHeaderCell>

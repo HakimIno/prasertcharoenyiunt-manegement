@@ -1,11 +1,10 @@
 import React from 'react';
-import { Box, TextField } from "@radix-ui/themes"
 
 interface StyledInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     label: string;
 }
 
-const StyledInput: React.FC<StyledInputProps> = ({ label, ...props }) => {
+const StyledInput: React.FC<StyledInputProps> = ({ label }) => {
     return (
         <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>

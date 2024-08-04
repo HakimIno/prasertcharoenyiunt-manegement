@@ -1,19 +1,25 @@
-import { StateUpdater, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import { LoginContainer } from './Login.styles';
 import supabase from '../../../utils/supabase';
-import { Button } from '@radix-ui/themes';
+import { Spinner } from '@radix-ui/themes';
 export default function Login() {
 
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [loading, setLoading] = useState(false);
 
     const handleLogin = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
+        setLoading(true);
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) alert(error.message);
+        setLoading(false);
+        if (error) {
+            alert(error.message);
+        } else {
+            // Handle successful login, e.g., redirect to a different page
+        }
     };
-
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target) {
@@ -31,9 +37,9 @@ export default function Login() {
 
 
     return (
-        <LoginContainer>
-            <div className="">
-                <form onSubmit={handleLogin} className="max-w-md mx-auto mt-10 p-4 border rounded-md shadow-md">
+        <LoginContainer className="flex items-center justify-center w-screen h-screen">
+            <div className="w-full max-w-md">
+                <form onSubmit={handleLogin} className="bg-white p-6 rounded-md shadow-md">
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Email:</label>
                         <input
@@ -60,12 +66,13 @@ export default function Login() {
                             placeholder="Enter your password"
                         />
                     </div>
-                    <Button
+                    <button
                         type="submit"
-                        className="w-full py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                        className="w-full  h-10 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center"
                     >
-                        Login
-                    </Button>
+                        {/* @ts-ignore */}
+                        {loading ? <Spinner size="3" /> : "Login"}
+                    </button>
                 </form>
             </div>
         </LoginContainer>

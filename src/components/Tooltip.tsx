@@ -1,4 +1,3 @@
-import React from 'react';
 
 const Tooltip = ({ children, text }: { children: JSX.Element, text: string }) => {
     return (
