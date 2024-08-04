@@ -30,6 +30,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
             <Flex gap="2">
                 <Button
+                    // @ts-ignore
                     size="1"
                     variant='surface'
                     onClick={() => handlePageChange(currentPage - 1)}
@@ -38,6 +39,7 @@ const Pagination: React.FC<PaginationProps> = ({
                 </Button>
 
                 <Button
+                    // @ts-ignore
                     size="1"
                     variant='solid'
                     onClick={() => handlePageChange(currentPage + 1)}
