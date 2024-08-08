@@ -5,7 +5,7 @@ import Pagination from './Pagination';
 interface Column {
     title: string;
     key: string;
-    render?: (item: any, index: number) => React.ReactNode;
+    render?: (item: any, index: number, row: any) => React.ReactNode;
 }
 
 interface DataTableProps {
@@ -32,7 +32,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, itemsPerPage = 10 
         <div>
             <Table.Root layout="auto" variant="surface">
                 <Table.Header>
-                    <Table.Row className="bg-gray-100">
+                    <Table.Row className="">
                         <Table.ColumnHeaderCell className="text-[#1a1a1a] font-semibold">ลำดับ</Table.ColumnHeaderCell>
                         {columns.map((column, index) => (
                             <Table.ColumnHeaderCell key={index} className="text-[#1a1a1a] font-semibold">{column.title}</Table.ColumnHeaderCell>
@@ -46,7 +46,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, itemsPerPage = 10 
                             <Table.Cell>{startIndex + rowIndex + 1}</Table.Cell>
                             {columns.map((column, colIndex) => (
                                 <Table.Cell key={colIndex}>
-                                    {column.render ? column.render(item, startIndex + rowIndex) : item[column.key]}
+                                    {column.render ? column.render(item[column.key], startIndex + rowIndex, item) : item[column.key]}
                                 </Table.Cell>
                             ))}
                         </Table.Row>

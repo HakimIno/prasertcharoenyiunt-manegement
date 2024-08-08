@@ -3,14 +3,14 @@
 import { UsersContainer } from './Users.styles';
 import DataTable from '../../../components/DataTable';
 import { useUsers } from './hooks/useUsers';
-import { Box, Button, DropdownMenu, Flex, TextField } from '@radix-ui/themes';
+import { Box, Button, DropdownMenu, Flex, Tabs, TextField } from '@radix-ui/themes';
 import { EllipsisVerticalIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import Dropdown from '../../../components/Dropdown';
 
 export default function Users() {
 
     const { users: usersData, loading, error } = useUsers()
+
     const columns = [
         {
             title: "ชื่อ",
@@ -67,12 +67,11 @@ export default function Users() {
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
 
-    const options = ['ผู้ใช้งานทั้งหมด', 'ผู้ใช้งานทั้งหมด', 'ผู้ดูแลระบบทั้งหมด'];
 
     return (
         <UsersContainer className="w-full h-full flex  justify-center bg-slate-50">
-            <div className=" max-w-screen-2xl w-full flex flex-col bg-white  my-10  p-10 rounded-xl">
-                <Flex direction="column" gap="5" >
+            <div className="max-w-screen-2xl w-full flex flex-col bg-white  my-10  p-10 rounded-xl">
+                <Flex direction="column" gap="3" >
 
                     <h5 className="text-xl font-bold ">จัดการข้อมูลผู้ใช้งาน</h5>
                     <Flex align={"center"} gap="3">
@@ -83,11 +82,28 @@ export default function Users() {
                                 </TextField.Slot>
                             </TextField.Root>
                         </Box>
-
-
-                        <Dropdown options={options} />
                     </Flex>
-                    <DataTable columns={columns} data={usersData} />
+
+
+                    <Tabs.Root defaultValue="all">
+                        <Tabs.List>
+                            <Tabs.Trigger value="all">ทั้งหมด</Tabs.Trigger>
+                            <Tabs.Trigger value="admin">ผู้ดูแลระบบ</Tabs.Trigger>
+                            <Tabs.Trigger value="user">ผู้ใช้งาน</Tabs.Trigger>
+                        </Tabs.List>
+
+                        <Box pt="3">
+                            <Tabs.Content value="all">
+                                <DataTable columns={columns} data={usersData} />
+                            </Tabs.Content>
+                            <Tabs.Content value="admin">
+                                <DataTable columns={columns} data={usersData.filter((user: { role: string; }) => user.role === "admin")} />
+                            </Tabs.Content>
+                            <Tabs.Content value="user">
+                                <DataTable columns={columns} data={usersData.filter((user: { role: string; }) => user.role === "user")} />
+                            </Tabs.Content>
+                        </Box>
+                    </Tabs.Root>
                 </Flex>
 
 

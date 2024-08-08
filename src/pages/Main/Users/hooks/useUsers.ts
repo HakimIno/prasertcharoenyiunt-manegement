@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import supabase from '../../../../utils/supabase';
+import { User } from '../../../../types';
 
 // Define a type for user data
-interface User {
-    id: string;
-    email: string;
-    // Add other user fields as needed
-}
+
 
 interface UseUsersResult {
     users: User[];

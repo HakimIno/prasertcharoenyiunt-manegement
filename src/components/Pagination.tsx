@@ -22,7 +22,7 @@ const Pagination: React.FC<PaginationProps> = ({
     const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
     return (
-        <div className="flex justify-between items-center  w-full py-2  px-2 bg-gray-100 rounded-md border-b border-r border-l">
+        <div className="flex justify-between items-center  w-full py-2  px-2  rounded-md ">
             <span className="mr-4 text-sm">
                 แสดง {startItem} ถึง {endItem} จาก {totalItems}
             </span>

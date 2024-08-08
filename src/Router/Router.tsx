@@ -35,7 +35,7 @@ export default function Router() {
             >
                 <Route
                     index
-                    element={<Main.Dashboard />}
+                    element={<Main.Folders />}
                 />
                 <Route
                     path="users"
@@ -43,7 +43,7 @@ export default function Router() {
                 />
                 <Route
                     path="folders"
-                    element={<Main.Users />}
+                    element={<Main.Folders />}
                 />
             </Route>
             <Route

@@ -1,6 +1,5 @@
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { PowerIcon, } from '@heroicons/react/24/outline';
-import { BoltIcon } from '@heroicons/react/24/solid';
 import Tooltip from './Tooltip'; // Import Tooltip component
 import supabase from '../utils/supabase';
 import { NavLink, useLocation } from 'react-router-dom';
@@ -34,8 +33,8 @@ const NavbarVertical: React.FC<NavbarVerticalProps> = ({ navbarList }) => {
         <NavigationMenu.Root className="h-screen w-16 bg-white text-white border flex flex-col justify-between">
             <NavigationMenu.List className="flex flex-col space-y-2 p-2 flex-grow">
                 <NavigationMenu.Item>
-                    <NavigationMenu.Link className="flex p-2 rounded-lg justify-center items-center">
-                        <BoltIcon className="w-6 h-6 text-amber-500" />
+                    <NavigationMenu.Link className="flex p-0.5 rounded-lg justify-center items-center">
+                        <img className={"w-full h-full rounded-lg"} src="https://gpamonnosfwdoxjvyrcw.supabase.co/storage/v1/object/public/media/942893c8-fe77-460c-a385-012b71fa7ae8.jpg" alt="logo" />
                     </NavigationMenu.Link>
                 </NavigationMenu.Item>
                 <hr className="border-dashed border-gray-200" />
