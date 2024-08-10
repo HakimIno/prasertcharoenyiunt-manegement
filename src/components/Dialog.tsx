@@ -1,6 +1,7 @@
-import { Button, Dialog, Flex } from "@radix-ui/themes";
-import React, { useState } from "preact/compat";
+import { Button, Dialog, Flex, Spinner } from "@radix-ui/themes";
+import React, { useRef, useState } from "preact/compat";
 import { formatFileSize } from "../utils/formatFileSize";
+import { useFileUpload } from "../hooks/useUploadFile";
 
 interface Props {
     trigger: React.ReactNode,
@@ -10,14 +11,17 @@ interface Props {
 
 const DialogInput = ({ trigger, title, dataIcon }: Props) => {
 
-    const [file, setFile] = useState<{ name: string, size: number }>();
+    const { handleFileChange, file, handleUpload, loading } = useFileUpload();
+
+    const closeDialogRef = useRef<HTMLButtonElement>(null);
+
     const [inputValue, setInputValue] = useState('');
 
-    const handleFileChange = (event: any) => {
+    const onFileChange = (event: any) => {
+        handleFileChange(event);
         const selectedFile = event.target.files[0];
-        setFile(selectedFile);
         if (selectedFile) {
-            setInputValue(`        ${selectedFile.name}`);
+            setInputValue(`${selectedFile.name}`);
         } else {
             setInputValue('');
         }
@@ -29,6 +33,13 @@ const DialogInput = ({ trigger, title, dataIcon }: Props) => {
         const noIcon = dataIcon.find((item: { type: string; }) => item.type === "file");
         return matchedIcon ? matchedIcon?.icon_url : noIcon?.icon_url;
     };
+
+
+    const handleSubmit = async () => {
+        await handleUpload();
+        closeDialogRef.current?.click();
+    };
+
 
     return (
         <Dialog.Root>
@@ -50,7 +61,7 @@ const DialogInput = ({ trigger, title, dataIcon }: Props) => {
                             />
                             <input
                                 type="file"
-                                onChange={handleFileChange}
+                                onChange={onFileChange} // Changed to use the hook's handler
                                 className="absolute top-0 right-0 opacity-0 w-full h-full cursor-pointer"
                             />
 
@@ -65,14 +76,16 @@ const DialogInput = ({ trigger, title, dataIcon }: Props) => {
                         </div>
                     </label>
                     <Flex gap="3" mt="4" justify="end">
-                        <Dialog.Close>
+                        <Dialog.Close ref={closeDialogRef}>
+                            {/* @ts-ignore */}
                             <Button variant="soft" color="gray">
                                 ยกเลิก
                             </Button>
                         </Dialog.Close>
-                        <Button type="submit">
-                            ยืนยัน
-                        </Button>
+                        {/* @ts-ignore */}
+                        <button onClick={handleSubmit} loading className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center">
+                            {loading ? <Spinner size="3" /> : <span className={"font-semibold"}>ยืนยัน</span>}
+                        </button>
                     </Flex>
                 </Flex>
             </Dialog.Content>

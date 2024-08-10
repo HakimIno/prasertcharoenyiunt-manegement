@@ -32,10 +32,9 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, itemsPerPage = 10 
         <div>
             <Table.Root layout="auto" variant="surface">
                 <Table.Header>
-                    <Table.Row className="">
-                        <Table.ColumnHeaderCell className="text-[#1a1a1a] font-semibold">ลำดับ</Table.ColumnHeaderCell>
+                    <Table.Row className="bg-blue-600">
                         {columns.map((column, index) => (
-                            <Table.ColumnHeaderCell key={index} className="text-[#1a1a1a] font-semibold">{column.title}</Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell key={index} className="text-white font-semibold">{column.title}</Table.ColumnHeaderCell>
                         ))}
                     </Table.Row>
                 </Table.Header>
@@ -43,10 +42,9 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, itemsPerPage = 10 
                 <Table.Body>
                     {currentPageData.map((item, rowIndex) => (
                         <Table.Row key={startIndex + rowIndex}>
-                            <Table.Cell>{startIndex + rowIndex + 1}</Table.Cell>
                             {columns.map((column, colIndex) => (
                                 <Table.Cell key={colIndex}>
-                                    {column.render ? column.render(item[column.key], startIndex + rowIndex, item) : item[column.key]}
+                                    <span className={"text-sm font-custom"}>  {column.render ? column.render(item[column.key], startIndex + rowIndex, item) : item[column.key]}</span>
                                 </Table.Cell>
                             ))}
                         </Table.Row>

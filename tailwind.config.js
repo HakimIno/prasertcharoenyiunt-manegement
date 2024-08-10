@@ -13,6 +13,9 @@ export default {
         ...violet,
         ...mauve,
       },
+      fontFamily: {
+        sukhumvit: ['SukhumvitSet', 'sans-serif'], // เพิ่มฟอนต์ SukhumvitSet
+      },
     },
   },
   plugins: [],

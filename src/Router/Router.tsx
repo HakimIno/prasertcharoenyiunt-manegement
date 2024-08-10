@@ -2,7 +2,6 @@
 import { Routes, Route } from 'react-router-dom';
 
 // ROUTES
-import PublicRoute from './PublicRoute';
 
 // PAGES
 import Auth from '../pages/Auth';
@@ -10,6 +9,8 @@ import Main from '../pages/Main';
 import Page404 from '../pages/Page404';
 import { useAuth } from '../context/AuthContext';
 import PrivateRoute from './PrivateRoute';
+import PublicRoute from './PublicRoute';
+
 import MainLayout from '../pages/Main/Layout';
 
 export default function Router() {
