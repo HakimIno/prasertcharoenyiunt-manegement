@@ -12,6 +12,7 @@ import PrivateRoute from './PrivateRoute';
 import PublicRoute from './PublicRoute';
 
 import MainLayout from '../pages/Main/Layout';
+import VerifyEmail from '../components/VerifyEmail';
 
 export default function Router() {
     const { user, role } = useAuth();
@@ -24,6 +25,15 @@ export default function Router() {
                 element={
                     <PublicRoute authenticated={isAuthentication}>
                         <Auth.Login />
+                    </PublicRoute>
+                }
+            />
+            {/* เส้นทางสำหรับ VerifyEmail */}
+            <Route
+                path="verify-email"
+                element={
+                    <PublicRoute authenticated={isAuthentication}>
+                        <VerifyEmail />
                     </PublicRoute>
                 }
             />

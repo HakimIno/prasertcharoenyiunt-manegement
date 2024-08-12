@@ -70,6 +70,13 @@ body {
   font-family: "SukhumvitSet", sans-serif;
   font-weight: 400;
 }
+
+.truncate-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

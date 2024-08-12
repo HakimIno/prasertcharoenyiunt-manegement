@@ -5,6 +5,7 @@ import Pagination from './Pagination';
 interface Column {
     title: string;
     key: string;
+    width?: string;
     render?: (item: any, index: number, row: any) => React.ReactNode;
 }
 
@@ -34,7 +35,13 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, itemsPerPage = 10 
                 <Table.Header>
                     <Table.Row className="bg-blue-600">
                         {columns.map((column, index) => (
-                            <Table.ColumnHeaderCell key={index} className="text-white font-semibold">{column.title}</Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell
+                                key={index}
+                                className="text-white font-semibold"
+                                style={{ width: column.width || 'auto' }} // กำหนดความกว้าง
+                            >
+                                {column.title}
+                            </Table.ColumnHeaderCell>
                         ))}
                     </Table.Row>
                 </Table.Header>
@@ -43,8 +50,13 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, itemsPerPage = 10 
                     {currentPageData.map((item, rowIndex) => (
                         <Table.Row key={startIndex + rowIndex}>
                             {columns.map((column, colIndex) => (
-                                <Table.Cell key={colIndex}>
-                                    <span className={"text-sm font-custom"}>  {column.render ? column.render(item[column.key], startIndex + rowIndex, item) : item[column.key]}</span>
+                                <Table.Cell
+                                    key={colIndex}
+                                    style={{ width: column.width || 'auto' }} // กำหนดความกว้าง
+                                >
+                                    <p className={"text-sm font-sukhumvit font-medium line-clamp-1"}>
+                                        {column.render ? column.render(item[column.key], startIndex + rowIndex, item) : item[column.key]}
+                                    </p>
                                 </Table.Cell>
                             ))}
                         </Table.Row>

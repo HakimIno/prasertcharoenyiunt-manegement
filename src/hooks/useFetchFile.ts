@@ -5,7 +5,7 @@ import { File } from '../types';
 export const useFetchFiles = () => {
     const [files, setFiles] = useState<File[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [cachedFiles, setCachedFiles] = useState<File[]>([]);
+    const [cachedFiles, setCachedFiles] = useState<File[]>([]); // เก็บข้อมูลเดิมไว้ใน cachedFiles
 
     const fetchFilesWithIcons = async () => {
         setLoading(true);
@@ -29,23 +29,18 @@ export const useFetchFiles = () => {
             return;
         }
 
-        if (data && JSON.stringify(data) !== JSON.stringify(cachedFiles)) {
-            setFiles(data);
-            setCachedFiles(data);
+        if (data) {
+            setCachedFiles(data); // อัปเดตข้อมูลเดิมใน cachedFiles
         }
+        setFiles(data || []);
 
         setTimeout(() => {
             setLoading(false);
-        }, 1000);
+        }, 1000); // หน่วงเวลา 5 วินาที
     };
 
     useEffect(() => {
-        // ตรวจสอบว่าถ้ามี cachedFiles อยู่แล้วไม่ต้องโหลดใหม่
-        if (cachedFiles.length === 0) {
-            fetchFilesWithIcons();
-        } else {
-            setLoading(false);
-        }
+        fetchFilesWithIcons();
 
         const channel = supabase
             .channel('custom-all-channel')
@@ -62,7 +57,7 @@ export const useFetchFiles = () => {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [cachedFiles]);
+    }, []);
 
-    return { files, loading };
+    return { files: loading ? cachedFiles : files, loading };
 };

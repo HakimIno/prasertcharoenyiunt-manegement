@@ -37,14 +37,13 @@ const MainLayout: React.FC = () => {
     const avatarColor = getColorByCharacter(firstChar);
 
     return (
-        <div className="flex">
+        <div className="flex h-screen">
             <NavbarVertical navbarList={navbarList} handleLogout={handleLogout} />
 
-            <div className="w-screen h-screen justify-center items-center">
+            <div className="flex-1 flex flex-col">
                 <nav className="w-full bg-white shadow-lg p-2 flex justify-between items-center border">
                     <div className="flex items-center justify-end w-full">
                         {/* Avatar */}
-
                         <DropdownMenu.Root>
                             <DropdownMenu.Trigger>
                                 <Flex mr={"5"}>
@@ -63,9 +62,12 @@ const MainLayout: React.FC = () => {
                         </DropdownMenu.Root>
                     </div>
                 </nav>
-                <Outlet />
+                <div className="flex-1 overflow-auto">
+                    <Outlet />
+                </div>
             </div>
         </div>
+
     );
 };
 

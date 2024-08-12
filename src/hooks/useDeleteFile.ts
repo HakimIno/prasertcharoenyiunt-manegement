@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { getTokens } from '../utils/getTokens';
 import { endpoint } from '../utils/http';
 import supabase from '../utils/supabase';
 
 export const useDeleteFile = () => {
+    const [loading, setLoading] = useState(false);
 
     const deleteFileToGoogleDrive = async (fileId: string) => {
         const { accessToken, refreshToken } = await getTokens();
@@ -24,6 +26,7 @@ export const useDeleteFile = () => {
     };
 
     const handleDelete = async (id: number, fileId: string) => {
+        setLoading(true);
         try {
             await deleteFileToGoogleDrive(fileId);
 
@@ -34,18 +37,22 @@ export const useDeleteFile = () => {
 
             if (error) {
                 console.error('Error deleting file from Supabase:', error);
+                setLoading(false);
                 return false;
             }
 
             console.log('File deleted successfully from Supabase:', data);
+            setLoading(false);
             return true;
         } catch (error) {
             console.error('Error in handleDelete:', error);
+            setLoading(false);
             return false;
         }
     };
 
     return {
         handleDelete,
+        loading, // เพิ่ม state loading เพื่อให้คุณสามารถใช้ใน UI ได้
     };
 };

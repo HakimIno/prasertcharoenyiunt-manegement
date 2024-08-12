@@ -6,16 +6,21 @@ import Router from './Router';
 import { AuthProvider } from './context/AuthContext';
 import { Theme } from '@radix-ui/themes'
 import '@radix-ui/themes/styles.css';
+import { EmailVerificationProvider } from './context/EmailVerificationContext';
 
 const rootElement = document.getElementById('app');
 if (rootElement) {
     ReactDOM.createRoot(rootElement).render(
         <Theme>
+
             <AuthProvider>
+
                 <React.StrictMode>
                     <BrowserRouter>
                         <div className="font-sukhumvit font-medium">
-                            <Router />
+                            <EmailVerificationProvider>
+                                <Router />
+                            </EmailVerificationProvider>
                         </div>
                     </BrowserRouter>
                 </React.StrictMode>
