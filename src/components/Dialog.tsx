@@ -2,7 +2,6 @@ import { Button, Dialog, Flex, Spinner } from "@radix-ui/themes";
 import React, { useRef, useState } from "preact/compat";
 import { formatFileSize } from "../utils/formatFileSize";
 import { useFileUpload } from "../hooks/useUploadFile";
-import DropdownSelected from "./DropdownSelected";
 import { useFetchBranchs } from "../hooks/useFetchBranchs";
 import { useFetchTypeCar } from "../hooks/useFetchTypeCar";
 
