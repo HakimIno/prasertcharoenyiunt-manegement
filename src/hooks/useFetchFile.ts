@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
 import supabase from '../utils/supabase';
-import { File } from '../types';
 
-export const useFetchFiles = () => {
-    const [files, setFiles] = useState<File[]>([]);
+export const useFetchFiles = (searchQuery = '') => {
+    const [files, setFiles] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [cachedFiles, setCachedFiles] = useState<File[]>([]); // เก็บข้อมูลเดิมไว้ใน cachedFiles
+    const [cachedFiles, setCachedFiles] = useState<any[]>([]);
 
     const fetchFilesWithIcons = async () => {
         setLoading(true);
 
-        const { data, error } = await supabase
+        let query = supabase
             .from('files')
             .select(`
                 id,
@@ -18,10 +17,17 @@ export const useFetchFiles = () => {
                 filename,
                 creationdate,
                 owner,
-                icon:icon (
+                icon (
+                    id,
                     icon_url
+                ),
+                branchs (
+                    id,
+                    branch_name
                 )
-            `);
+            `).order('creationdate', { ascending: false });
+
+        const { data, error } = await query;
 
         if (error) {
             console.error('Error fetching files with icons:', error);
@@ -29,14 +35,20 @@ export const useFetchFiles = () => {
             return;
         }
 
-        if (data) {
-            setCachedFiles(data); // อัปเดตข้อมูลเดิมใน cachedFiles
+        let filteredData = data || [];
+        if (searchQuery) {
+            const searchQueryLower = searchQuery.toLowerCase();
+            filteredData = filteredData.filter(file =>
+                file.filename.toLowerCase().includes(searchQueryLower)
+            );
         }
-        setFiles(data || []);
+
+        setCachedFiles(filteredData);
+        setFiles(filteredData);
 
         setTimeout(() => {
             setLoading(false);
-        }, 1000); // หน่วงเวลา 5 วินาที
+        }, 1000);
     };
 
     useEffect(() => {
@@ -57,7 +69,7 @@ export const useFetchFiles = () => {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, []);
+    }, [searchQuery]);
 
     return { files: loading ? cachedFiles : files, loading };
 };

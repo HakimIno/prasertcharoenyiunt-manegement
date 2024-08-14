@@ -6,8 +6,14 @@ import { endpoint } from '../utils/http';
 
 export const useFileUpload = () => {
     const [file, setFile] = useState<File | null>(null);
+    const [seleteBranch, setSeleteBranch] = useState<number>(1);
+
     const [loading, setLoading] = useState<boolean>(false);
     const { user } = useAuth();
+
+    const handleSelection = (option: number) => {
+        setSeleteBranch(option);
+    };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         //@ts-ignore
@@ -100,6 +106,7 @@ export const useFileUpload = () => {
                     creationdate: new Date(),
                     icon_id: iconId,
                     file_id: fileId,
+                    branch_id: seleteBranch
                 },
             ]);
 
@@ -159,5 +166,6 @@ export const useFileUpload = () => {
         loading,
         handleFileChange,
         handleUpload,
+        handleSelection
     };
 };

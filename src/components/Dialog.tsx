@@ -2,16 +2,17 @@ import { Button, Dialog, Flex, Spinner } from "@radix-ui/themes";
 import React, { useRef, useState } from "preact/compat";
 import { formatFileSize } from "../utils/formatFileSize";
 import { useFileUpload } from "../hooks/useUploadFile";
+import DropdownSelected from "./DropdownSelected";
+import { useFetchBranchs } from "../hooks/useFetchBranchs";
 
 interface Props {
     trigger: React.ReactNode,
     title: string,
-    dataIcon: any
 }
 
-const DialogInput = ({ trigger, title, dataIcon }: Props) => {
+const DialogInput = ({ trigger, title }: Props) => {
 
-    const { handleFileChange, file, handleUpload, loading } = useFileUpload();
+    const { handleFileChange, file, handleUpload, handleSelection, loading } = useFileUpload();
 
     const closeDialogRef = useRef<HTMLButtonElement>(null);
 
@@ -27,19 +28,12 @@ const DialogInput = ({ trigger, title, dataIcon }: Props) => {
         }
     };
 
-    const getIconUrl = (fileName: any) => {
-        const fileExtension = fileName.split('.').pop().toLowerCase();
-        const matchedIcon = dataIcon.find((item: { type: string; }) => item.type === fileExtension);
-        const noIcon = dataIcon.find((item: { type: string; }) => item.type === "file");
-        return matchedIcon ? matchedIcon?.icon_url : noIcon?.icon_url;
-    };
-
-
     const handleSubmit = async () => {
         await handleUpload();
         closeDialogRef.current?.click();
     };
 
+    const dataBranchs = useFetchBranchs()
 
     return (
         <Dialog.Root>
@@ -64,17 +58,18 @@ const DialogInput = ({ trigger, title, dataIcon }: Props) => {
                                 onChange={onFileChange} // Changed to use the hook's handler
                                 className="absolute top-0 right-0 opacity-0 w-full h-full cursor-pointer"
                             />
-
-                            {file?.name && (
-                                <img
-                                    className={"absolute top-2 left-2"}
-                                    style={{ width: '26px', height: '26px' }}
-                                    src={getIconUrl(file?.name)}
-                                />
-                            )}
                             {file?.size && <span className={"text-sm font-medium text-gray-400"}>ขนาดไฟล์: {formatFileSize(file?.size)}</span>}
                         </div>
+
+
                     </label>
+
+                    <label>
+                        <div className="relative w-full">
+                            <DropdownSelected options={dataBranchs} onSelect={handleSelection} />
+                        </div>
+                    </label>
+
                     <Flex gap="3" mt="4" justify="end">
                         <Dialog.Close ref={closeDialogRef}>
                             {/* @ts-ignore */}

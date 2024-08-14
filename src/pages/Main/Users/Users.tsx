@@ -3,9 +3,8 @@
 import { UsersContainer } from './Users.styles';
 import DataTable from '../../../components/DataTable';
 import { useUsers } from './hooks/useUsers';
-import { Box, Button, DropdownMenu, Flex, Tabs, TextField } from '@radix-ui/themes';
+import { Box, Button, DropdownMenu, Flex, Tabs } from '@radix-ui/themes';
 import { EllipsisVerticalIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 export default function Users() {
 
@@ -74,17 +73,6 @@ export default function Users() {
                 <Flex direction="column" gap="3" >
 
                     <h5 className="text-xl font-bold ">จัดการข้อมูลผู้ใช้งาน</h5>
-                    <Flex align={"center"} gap="3">
-                        <Box maxWidth="400px">
-                            <TextField.Root placeholder="Search the docs…" radius='large'>
-                                <TextField.Slot>
-                                    <MagnifyingGlassIcon height="16" width="16" />
-                                </TextField.Slot>
-                            </TextField.Root>
-                        </Box>
-                    </Flex>
-
-
                     <Tabs.Root defaultValue="all">
                         <Tabs.List>
                             <Tabs.Trigger value="all">ทั้งหมด</Tabs.Trigger>

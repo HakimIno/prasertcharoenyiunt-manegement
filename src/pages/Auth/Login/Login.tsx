@@ -41,7 +41,8 @@ export default function Login() {
         <LoginContainer className="">
 
 
-            <div className="min-h-screen flex items-center justify-center bg-gray-100">
+            <div className="min-h-screen flex flex-col items-center justify-center gap-10 bg-gray-100 -mt-16 ">
+                <img src={"https://gpamonnosfwdoxjvyrcw.supabase.co/storage/v1/object/public/media/942893c8-fe77-460c-a385-012b71fa7ae8.jpg"} style={{ width: 150, height: 150, borderRadius: 20 }} />
                 <div className="relative w-96">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-blue-500 to-blue-200 rounded-lg transform rotate-[-10deg] z-0"></div>
                     <div className="bg-white p-8 rounded-lg shadow-lg relative z-10">

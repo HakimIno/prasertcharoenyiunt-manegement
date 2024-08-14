@@ -1,35 +1,35 @@
 import { useEffect, useState } from 'react';
 import supabase from '../utils/supabase';
 
-export const useFetchIcons = () => {
-    const [dataIcon, setDataIcon] = useState<{ id: number, icon_url: string; type: string; abbreviation: string }[]>([]);
+export const useFetchBranchs = () => {
+    const [dataBranchs, setDataBranchs] = useState<{ id: number, branch_name: string }[]>([]);
 
-    const fetchIcons = async () => {
+    const fetchBranchs = async () => {
         const { data, error } = await supabase
-            .from('icon')
+            .from('branchs')
             .select('*')
             .order('id', { ascending: true });
 
         if (error) {
-            console.error('Error fetching data from icon:', error);
+            console.error('Error fetching data from branchs:', error);
         } else {
-            setDataIcon(data);
+            setDataBranchs(data);
         }
     };
 
     useEffect(() => {
         // Fetch the data once when the component mounts
-        fetchIcons();
+        fetchBranchs();
 
         // Set up a Realtime subscription to listen for changes
         const channel = supabase
-            .channel('public:icon')
+            .channel('public:branchs')
             .on(
                 'postgres_changes',
-                { event: '*', schema: 'public', table: 'icon' },
+                { event: '*', schema: 'public', table: 'branchs' },
                 (payload) => {
-                    console.log('Change detected in icon table:', payload);
-                    fetchIcons(); // Refresh data when a change is detected
+                    console.log('Change detected in branchs table:', payload);
+                    fetchBranchs(); // Refresh data when a change is detected
                 }
             )
             .subscribe();
@@ -40,5 +40,5 @@ export const useFetchIcons = () => {
         };
     }, []); // Empty dependency array ensures it only runs once on mount
 
-    return dataIcon;
+    return dataBranchs;
 };

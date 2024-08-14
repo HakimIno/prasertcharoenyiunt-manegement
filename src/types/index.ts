@@ -14,4 +14,8 @@ export type File = {
     creationdate: string; // หรือ Date ถ้าคุณต้องการใช้ object ของ Date
     owner: string;
     icon: { icon_url: string }[];
+    branchs: {
+        id: number,
+        branch_name: string
+    }
 };

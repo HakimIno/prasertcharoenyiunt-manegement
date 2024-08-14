@@ -12,14 +12,41 @@ import { useDeleteFile } from '../../../hooks/useDeleteFile';
 import DataTable from '../../../components/DataTable';
 import dayjs from 'dayjs';
 import { useState } from 'preact/hooks';
+import { useFetchBranchs } from '../../../hooks/useFetchBranchs';
+import DropdownSelected from '../../../components/DropdownSelected';
+import { useUpdateFile } from '../../../hooks/useUpdateFile';
 
 export default function Folders() {
-    const dataIcon = useFetchIcons();
-    const { files, loading } = useFetchFiles();
 
-    const { handleDelete, loading: deleteLoading } = useDeleteFile()
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const { files, loading } = useFetchFiles(searchQuery);
+    const dataBranchs = useFetchBranchs()
+    const dataIcon = useFetchIcons();
+
+    const { handleDelete, loading: deleteLoading } = useDeleteFile();
+    const { handleUpdateFile, loading: updateLoading } = useUpdateFile();
+
+    const [seletedId, setSeletedId] = useState(0)
 
     const [open, setOpen] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false);
+    const [seleteBranch, setSeleteBranch] = useState(0)
+    const [newFilename, setNewFilename] = useState('');
+
+    const handleFilenameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        //@ts-ignore
+        setNewFilename(e.target.value);
+    };
+
+    const handleSelection = (option: number) => {
+        setSeleteBranch(option)
+    };
+
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+    };
+
 
     const columns = [
         {
@@ -102,12 +129,18 @@ export default function Folders() {
                                 </Button>
                             </DropdownMenu.Trigger>
                             <DropdownMenu.Content variant="soft" color="gray">
-                                <DropdownMenu.Item shortcut="⌘ E" onSelect={() => console.log('Edit clicked')}>
+                                <DropdownMenu.Item shortcut="⌘ E" onSelect={() => {
+                                    setSeletedId(row?.id)
+                                    setOpenEdit(true)
+                                }}>
                                     <PencilIcon className="w-3 h-3" />
                                     <span className={"font-medium"}>แก้ไข</span>
                                 </DropdownMenu.Item>
                                 <DropdownMenu.Separator />
-                                <DropdownMenu.Item shortcut="⌘ D" color="red" onSelect={() => setOpen(true)}>
+                                <DropdownMenu.Item shortcut="⌘ D" color="red" onSelect={() => {
+                                    setSeletedId(row?.id)
+                                    setOpen(true)
+                                }}>
                                     <TrashIcon className="w-3 h-3 text-red-600" />
                                     <span className={"font-medium"}>ลบ</span>
                                 </DropdownMenu.Item>
@@ -136,18 +169,65 @@ export default function Folders() {
                                         </Button>
                                     </Dialog.Close>
                                     <Dialog.Close>
-                                        <button onClick={() => handleDelete(row?.id, row?.file_id)} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center">
+                                        <button onClick={() => {
+                                            handleDelete(seletedId, row?.file_id)
+                                            setSeletedId(0)
+                                        }} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center">
                                             {deleteLoading ? <Spinner size="3" /> : <span className={"font-semibold font-sukhumvit"}>ตกลง</span>}
                                         </button>
                                     </Dialog.Close>
                                 </Flex>
                             </Dialog.Content>
                         </Dialog.Root>
-                    </Flex>
+
+                        <Dialog.Root open={openEdit} onOpenChange={setOpenEdit}>
+                            <Dialog.Content maxWidth="450px">
+                                <Dialog.Title>
+                                    <div className="font-semibold font-sukhumvit">
+                                        แก้ไขชื่อไฟล์
+                                    </div>
+                                </Dialog.Title>
+
+                                <Flex direction="column" gap="3">
+                                    <label>
+                                        <Text as="div" size="2" mb="1" weight="bold">
+                                            ชื่อไฟล์
+                                        </Text>
+                                        <input
+                                            className="w-full p-2 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="กรอกชื่อไฟล์ใหม่ ไม่ต้องใส่ .png หรือ . อื่นๆ"
+                                            value={newFilename}
+                                            onChange={handleFilenameChange}
+                                        />
+                                    </label>
+                                </Flex>
+
+                                <Flex gap="3" mt="4" justify="end">
+                                    <Dialog.Close>
+                                        {/* @ts-ignore */}
+                                        <Button variant="soft" color="gray">
+                                            <span className={"font-semibold font-sukhumvit"}>ยกเลิก</span>
+                                        </Button>
+                                    </Dialog.Close>
+                                    <Dialog.Close>
+                                        <button onClick={() => {
+                                            handleUpdateFile(seletedId, newFilename + "." + row?.filename.split('.')[1])
+                                            setSeletedId(0)
+                                        }}
+                                            className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center">
+                                            {updateLoading ? <Spinner size="3" /> : <span className={"font-semibold font-sukhumvit"}>ตกลง</span>}
+                                        </button>
+                                    </Dialog.Close>
+                                </Flex>
+                            </Dialog.Content>
+                        </Dialog.Root>
+                    </Flex >
                 )
             }
         }
     ];
+
+
 
     return (
         <FoldersContainer className="w-full h-full flex justify-center bg-slate-50">
@@ -156,7 +236,10 @@ export default function Folders() {
                     <h5 className="text-xl font-bold">จัดการไฟล์</h5>
                     <Flex direction="column" gap="3">
                         <Flex justify={"between"} width={"100%"}>
-                            <SearchBar />
+                            <Flex gap={"4"}>
+                                <SearchBar onSearch={handleSearch} />
+                                <DropdownSelected options={dataBranchs} onSelect={handleSelection} />
+                            </Flex>
                             <DialogInput
                                 trigger={
                                     //@ts-ignore
@@ -166,39 +249,41 @@ export default function Folders() {
                                     </Button>
                                 }
                                 title='เพิ่มไฟล์'
-                                dataIcon={dataIcon}
                             />
-                        </Flex>
 
+                        </Flex>
                         <Box>
                             <Tabs.Root defaultValue="all">
                                 <Tabs.List>
                                     <Tabs.Trigger value="all" ><div className={"font-semibold font-sukhumvit"}>ทั้งหมด</div></Tabs.Trigger>
                                     {dataIcon.map((item) => (
-                                        <Tabs.Trigger value={item?.abbreviation} className={"flex gap-2 font-semibold font-sukhumvit"}>
-                                            <img src={item?.icon_url} alt={item?.type} style={{ width: '16px', height: '16px' }} />
-                                            <div className={"font-semibold font-sukhumvit"}>{item?.abbreviation?.toUpperCase()}</div>
+                                        <Tabs.Trigger value={item?.abbreviation}>
+                                            <div className="flex gap-1 font-semibold font-sukhumvit">
+                                                <img src={item?.icon_url} alt={item?.type} style={{ width: '16px', height: '16px' }} />
+                                                <div className={"font-semibold font-sukhumvit"}>{item?.abbreviation?.toUpperCase()}</div>
+                                            </div>
                                         </Tabs.Trigger>
                                     ))}
                                 </Tabs.List>
 
                                 <Box pt="3">
                                     <Tabs.Content value="all">
-                                        <DataTable columns={columns} data={files} />
+                                        <DataTable columns={columns} data={files.filter((branch) => seleteBranch === 0 || branch?.branchs?.id === seleteBranch)} />
                                     </Tabs.Content>
 
                                     {dataIcon.map((item) => (
                                         <Tabs.Content value={item?.abbreviation}>
-                                            <DataTable columns={columns} data={files.filter((folder: { filename: string; }) => folder.filename.endsWith(`.${item?.abbreviation}`))} />
+                                            <DataTable
+                                                columns={columns}
+                                                data={files
+                                                    .filter((folder) => folder.icon.id === item?.id)
+                                                    .filter((branch) => seleteBranch === 0 || branch?.branchs?.id === seleteBranch)}
+                                            />
                                         </Tabs.Content>
                                     ))}
 
                                 </Box>
-
-
                             </Tabs.Root>
-
-
                         </Box>
                     </Flex>
                 </Flex>
