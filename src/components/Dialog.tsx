@@ -98,7 +98,7 @@ const DialogInput = ({ trigger, title }: Props) => {
                                 //@ts-ignore
                                 onChange={(e) => handleSelectionTypeCars(parseInt(e.target.value))}
                             >
-                                <option value="" disabled selected cla>เลือกสาขา</option>
+                                <option value="" disabled selected>เลือกสาขา</option>
                                 {dataTypeCar.map(type_car => (
                                     <option key={type_car.id} value={type_car.id}>
                                         {type_car.car_type_name}
