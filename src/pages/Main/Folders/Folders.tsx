@@ -238,7 +238,12 @@ export default function Folders() {
                         <Flex justify={"between"} width={"100%"}>
                             <Flex gap={"4"}>
                                 <SearchBar onSearch={handleSearch} />
-                                <DropdownSelected options={dataBranchs} onSelect={handleSelection} />
+                                <DropdownSelected
+                                    options={dataBranchs.map(branch => ({ id: branch.id, name: branch.branch_name }))}
+                                    onSelect={handleSelection}
+                                    placeholder="สาขา"
+                                />
+
                             </Flex>
                             <DialogInput
                                 trigger={

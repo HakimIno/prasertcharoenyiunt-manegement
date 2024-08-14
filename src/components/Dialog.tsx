@@ -4,6 +4,7 @@ import { formatFileSize } from "../utils/formatFileSize";
 import { useFileUpload } from "../hooks/useUploadFile";
 import DropdownSelected from "./DropdownSelected";
 import { useFetchBranchs } from "../hooks/useFetchBranchs";
+import { useFetchTypeCar } from "../hooks/useFetchTypeCar";
 
 interface Props {
     trigger: React.ReactNode,
@@ -12,7 +13,7 @@ interface Props {
 
 const DialogInput = ({ trigger, title }: Props) => {
 
-    const { handleFileChange, file, handleUpload, handleSelection, loading } = useFileUpload();
+    const { handleFileChange, file, handleUpload, handleSelection, handleSelectionTypeCars, loading } = useFileUpload();
 
     const closeDialogRef = useRef<HTMLButtonElement>(null);
 
@@ -33,7 +34,8 @@ const DialogInput = ({ trigger, title }: Props) => {
         closeDialogRef.current?.click();
     };
 
-    const dataBranchs = useFetchBranchs()
+    const dataBranchs = useFetchBranchs();
+    const dataTypeCar = useFetchTypeCar();
 
     return (
         <Dialog.Root>
@@ -65,10 +67,47 @@ const DialogInput = ({ trigger, title }: Props) => {
                     </label>
 
                     <label>
-                        <div className="relative w-full">
-                            <DropdownSelected options={dataBranchs} onSelect={handleSelection} />
+                        <div className="relative w-full flex flex-row justify-between gap-2">
+                            {/* <DropdownSelected
+                                options={dataBranchs.map(branch => ({ id: branch.id, name: branch.branch_name }))}
+                                onSelect={handleSelection}
+                                placeholder="สาขา"
+                            /> */}
+                            <select
+                                id="branch"
+                                className="bg-blue-50 border border-blue-600 text-blue-600 font-semibold font-sukhumvit text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                //@ts-ignore
+                                onChange={(e) => handleSelection(parseInt(e.target.value))}
+                            >
+                                <option value="" disabled selected>เลือกสาขา</option>
+                                {dataBranchs.map(branch => (
+                                    <option key={branch.id} value={branch.id}>
+                                        {branch.branch_name}
+                                    </option>
+                                ))}
+                            </select>
+
+                            {/* <DropdownSelected
+                                options={dataTypeCar.map(typeCar => ({ id: typeCar.id, name: typeCar.car_type_name }))}
+                                onSelect={handleSelectionTypeCars}
+                                placeholder="ประเภทรถ"
+                            /> */}
+                            <select
+                                id="type_cars"
+                                className="bg-blue-50 border border-blue-600 text-blue-600 font-semibold font-sukhumvit text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                //@ts-ignore
+                                onChange={(e) => handleSelectionTypeCars(parseInt(e.target.value))}
+                            >
+                                <option value="" disabled selected cla>เลือกสาขา</option>
+                                {dataTypeCar.map(type_car => (
+                                    <option key={type_car.id} value={type_car.id}>
+                                        {type_car.car_type_name}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </label>
+
 
                     <Flex gap="3" mt="4" justify="end">
                         <Dialog.Close ref={closeDialogRef}>

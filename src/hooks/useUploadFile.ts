@@ -7,12 +7,17 @@ import { endpoint } from '../utils/http';
 export const useFileUpload = () => {
     const [file, setFile] = useState<File | null>(null);
     const [seleteBranch, setSeleteBranch] = useState<number>(1);
+    const [seleteTypeCars, setSeleteTypeCars] = useState<number>(1);
 
     const [loading, setLoading] = useState<boolean>(false);
     const { user } = useAuth();
 
     const handleSelection = (option: number) => {
         setSeleteBranch(option);
+    };
+
+    const handleSelectionTypeCars = (option: number) => {
+        setSeleteTypeCars(option);
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,7 +111,8 @@ export const useFileUpload = () => {
                     creationdate: new Date(),
                     icon_id: iconId,
                     file_id: fileId,
-                    branch_id: seleteBranch
+                    branch_id: seleteBranch,
+                    type_car_id: seleteTypeCars
                 },
             ]);
 
@@ -166,6 +172,7 @@ export const useFileUpload = () => {
         loading,
         handleFileChange,
         handleUpload,
-        handleSelection
+        handleSelection,
+        handleSelectionTypeCars
     };
 };
