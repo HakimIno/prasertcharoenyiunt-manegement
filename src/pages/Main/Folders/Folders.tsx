@@ -15,12 +15,16 @@ import { useState } from 'preact/hooks';
 import { useFetchBranchs } from '../../../hooks/useFetchBranchs';
 import DropdownSelected from '../../../components/DropdownSelected';
 import { useUpdateFile } from '../../../hooks/useUpdateFile';
+import { useCreateBranch } from '../../../hooks/useCreateBranch';
+import { useCreateTypeCar } from '../../../hooks/useCreateTypeCar';
+import { useFetchTypeCar } from '../../../hooks/useFetchTypeCar';
 
 export default function Folders() {
 
     const [searchQuery, setSearchQuery] = useState<string>('');
     const { files, loading } = useFetchFiles(searchQuery);
     const dataBranchs = useFetchBranchs()
+    const dataTypeCar = useFetchTypeCar()
     const dataIcon = useFetchIcons();
 
     const { handleDelete, loading: deleteLoading } = useDeleteFile();
@@ -31,6 +35,7 @@ export default function Folders() {
     const [open, setOpen] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
     const [seleteBranch, setSeleteBranch] = useState(0)
+    const [seleteTypeCars, setSeleteTypeCars] = useState(0)
     const [newFilename, setNewFilename] = useState('');
 
     const handleFilenameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,6 +47,9 @@ export default function Folders() {
         setSeleteBranch(option)
     };
 
+    const handleSelectionTypeCar = (option: number) => {
+        setSeleteTypeCars(option)
+    };
 
     const handleSearch = (query: string) => {
         setSearchQuery(query);
@@ -226,7 +234,32 @@ export default function Folders() {
             }
         }
     ];
+    const [branchName, setBranchName] = useState('');
+    const [typeCarName, setTypeCarName] = useState('');
+    const { createBranch, loading: loadingCreateBranch } = useCreateBranch();
+    const { createTypeCar, loading: loadingCreateTypeCar } = useCreateTypeCar()
 
+    const handleCreateBranch = async () => {
+        try {
+            await createBranch(branchName);
+            setBranchName('');
+            alert('สาขาถูกสร้างเรียบร้อยแล้ว!');
+            window.location.reload();
+        } catch (error) {
+            alert('เกิดข้อผิดพลาดในการสร้างสาขา');
+        }
+    };
+
+    const handleCreateTypeCars = async () => {
+        try {
+            await createTypeCar(typeCarName);
+            setTypeCarName('');
+            alert('ประเภทรถถูกสร้างเรียบร้อยแล้ว!');
+            window.location.reload();
+        } catch (error) {
+            alert('เกิดข้อผิดพลาดในการสร้างสาขา');
+        }
+    };
 
 
     return (
@@ -244,17 +277,117 @@ export default function Folders() {
                                     placeholder="สาขา"
                                 />
 
+                                <DropdownSelected
+                                    options={dataTypeCar.map(typeCar => ({ id: typeCar.id, name: typeCar.car_type_name }))}
+                                    onSelect={handleSelectionTypeCar}
+                                    placeholder="สาขา"
+                                />
                             </Flex>
-                            <DialogInput
-                                trigger={
-                                    //@ts-ignore
-                                    <Button radius="large" variant="surface" className="font-custom" >
-                                        <PlusIcon className={"w-4 h-4"} />
-                                        <span className={"font-medium"}>เพิ่มไฟล์</span>
-                                    </Button>
-                                }
-                                title='เพิ่มไฟล์'
-                            />
+                            <Flex gap={"3"}>
+                                <Dialog.Root>
+                                    <Dialog.Trigger>
+                                        {/* @ts-ignore*/}
+                                        <Button color="cyan" variant="soft">สร้างสาขา</Button>
+                                    </Dialog.Trigger>
+
+                                    <Dialog.Content maxWidth="450px">
+                                        <Dialog.Title>สร้างสาขา</Dialog.Title>
+
+                                        <Flex direction="column" gap="3">
+                                            <label>
+                                                <Text as="div" size="2" mb="1" weight="bold">
+                                                    สาขา
+                                                </Text>
+                                                <input
+                                                    type="text"
+                                                    value={branchName}
+                                                    onChange={(e: any) => setBranchName(e.target.value)}
+                                                    placeholder="กรอกชื่อสาขา"
+                                                    style={{
+                                                        padding: '8px',
+                                                        width: '100%',
+                                                        boxSizing: 'border-box',
+                                                        borderRadius: '4px',
+                                                        border: '1px solid #ccc',
+                                                    }}
+                                                />
+                                            </label>
+                                        </Flex>
+
+                                        <Flex gap="3" mt="4" justify="end">
+                                            <Dialog.Close>
+                                                {/* @ts-ignore */}
+                                                <Button variant="soft" color="gray">
+                                                    ยกเลิก
+                                                </Button>
+                                            </Dialog.Close>
+                                            <Dialog.Close>
+
+                                                <button onClick={handleCreateBranch} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center">
+                                                    {loadingCreateBranch ? <Spinner size="3" /> : <span className={"font-semibold"}>สร้าง</span>}
+                                                </button>
+                                            </Dialog.Close>
+                                        </Flex>
+                                    </Dialog.Content>
+                                </Dialog.Root>
+
+                                <Dialog.Root>
+                                    <Dialog.Trigger>
+                                        {/* @ts-ignore*/}
+                                        <Button color="crimson" variant="soft">สร้างประเภทรถ</Button>
+                                    </Dialog.Trigger>
+
+                                    <Dialog.Content maxWidth="450px">
+                                        <Dialog.Title>สร้างประเภทรถ</Dialog.Title>
+
+                                        <Flex direction="column" gap="3">
+                                            <label>
+                                                <Text as="div" size="2" mb="1" weight="bold">
+                                                    ประเภทรถ
+                                                </Text>
+                                                <input
+                                                    type="text"
+                                                    value={typeCarName}
+                                                    onChange={(e: any) => setTypeCarName(e.target.value)}
+                                                    placeholder="กรอกชื่อประเภทรถ"
+                                                    style={{
+                                                        padding: '8px',
+                                                        width: '100%',
+                                                        boxSizing: 'border-box',
+                                                        borderRadius: '4px',
+                                                        border: '1px solid #ccc',
+                                                    }}
+                                                />
+                                            </label>
+                                        </Flex>
+
+                                        <Flex gap="3" mt="4" justify="end">
+                                            <Dialog.Close>
+                                                {/* @ts-ignore */}
+                                                <Button variant="soft" color="gray">
+                                                    ยกเลิก
+                                                </Button>
+                                            </Dialog.Close>
+                                            <Dialog.Close>
+                                                <button onClick={handleCreateTypeCars} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center">
+                                                    {loadingCreateTypeCar ? <Spinner size="3" /> : <span className={"font-semibold"}>สร้าง</span>}
+                                                </button>
+                                            </Dialog.Close>
+                                        </Flex>
+                                    </Dialog.Content>
+                                </Dialog.Root>
+
+                                <DialogInput
+                                    trigger={
+                                        //@ts-ignore
+                                        <Button radius="large" variant="surface" className="font-custom" >
+                                            <PlusIcon className={"w-4 h-4"} />
+                                            <span className={"font-medium"}>เพิ่มไฟล์</span>
+                                        </Button>
+                                    }
+                                    title='เพิ่มไฟล์'
+                                />
+                            </Flex>
 
                         </Flex>
                         <Box>
@@ -273,7 +406,11 @@ export default function Folders() {
 
                                 <Box pt="3">
                                     <Tabs.Content value="all">
-                                        <DataTable columns={columns} data={files.filter((branch) => seleteBranch === 0 || branch?.branchs?.id === seleteBranch)} />
+                                        <DataTable columns={columns} data={
+                                            files
+                                                .filter((branch) => seleteBranch === 0 || branch?.branchs?.id === seleteBranch)
+                                                .filter((type) => seleteTypeCars === 0 || type?.type_cars?.id === seleteTypeCars)
+                                        } />
                                     </Tabs.Content>
 
                                     {dataIcon.map((item) => (
@@ -282,7 +419,9 @@ export default function Folders() {
                                                 columns={columns}
                                                 data={files
                                                     .filter((folder) => folder.icon.id === item?.id)
-                                                    .filter((branch) => seleteBranch === 0 || branch?.branchs?.id === seleteBranch)}
+                                                    .filter((branch) => seleteBranch === 0 || branch?.branchs?.id === seleteBranch)
+                                                    .filter((type) => seleteTypeCars === 0 || type?.type_cars?.id === seleteTypeCars)
+                                                }
                                             />
                                         </Tabs.Content>
                                     ))}

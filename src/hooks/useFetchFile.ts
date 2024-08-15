@@ -24,6 +24,10 @@ export const useFetchFiles = (searchQuery = '') => {
                 branchs (
                     id,
                     branch_name
+                ),
+                type_cars (
+                    id,
+                    car_type_name
                 )
             `).order('creationdate', { ascending: false });
 
