@@ -97,7 +97,7 @@ export default function Support() {
                 <div className="mt-6">
                     <h2 className="text-lg font-bold mb-2">ข้อมูลการติดต่อ</h2>
                     <p>86 ม.14 เมืองคง อำเภอ ราษีไศล ศรีสะเกษ 33160</p>
-                    <p>โทรศัพท์: 085 104 5653</p>
+                    <p>โทรศัพท์: 082 923 7369</p>
                     <p>อีเมล: prasertjarernyonte@gmail.com</p>
                 </div>
             </div>

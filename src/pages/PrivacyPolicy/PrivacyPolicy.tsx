@@ -51,7 +51,7 @@ const PrivacyPolicy = () => {
                 <ul className="list-disc list-inside text-gray-700 mb-4 pl-4 text-sm">
                     <li>ชื่อบริษัท: ประเสริฐเจริญยนต์</li>
                     <li>อีเมล: prasertjarernyonte@gmail.com</li>
-                    <li>เบอร์โทรศัพท์: 085 104 5653</li>
+                    <li>เบอร์โทรศัพท์: 082 923 7369</li>
                 </ul>
             </div>
         </div>
