@@ -6,17 +6,21 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 // PAGES
 import Auth from '../pages/Auth';
 import Main from '../pages/Main';
-import Page404 from '../pages/Page404';
+
 import { useAuth } from '../context/AuthContext';
 import PrivateRoute from './PrivateRoute';
 import PublicRoute from './PublicRoute';
 
 import MainLayout from '../pages/Main/Layout';
 import VerifyEmail from '../components/VerifyEmail';
+import Support from '../pages/Support';
+import Page404 from '../pages/Page404';
+import PrivacyPolicy from '../pages/PrivacyPolicy';
 
 export default function Router() {
-    const { user, role } = useAuth();
-    const isAuthentication = !!user && (role === "superadmin" || role === "admin");
+    const { user, } = useAuth();
+    const isAuthentication = !!user;
+    // && (role === "superadmin" || role === "admin")
 
     return (
         <Routes>
@@ -61,9 +65,19 @@ export default function Router() {
             <Route
                 path="*"
                 element={
-                    <PrivateRoute authenticated={isAuthentication}>
-                        <Page404 />
-                    </PrivateRoute>
+                    <Page404 />
+                }
+            />
+            <Route
+                path="/support"
+                element={
+                    <Support />
+                }
+            />
+            <Route
+                path="/privacypolicy"
+                element={
+                    <PrivacyPolicy />
                 }
             />
         </Routes>

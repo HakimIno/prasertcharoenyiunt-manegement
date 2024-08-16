@@ -47,7 +47,7 @@ export default function Login() {
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-blue-500 to-blue-200 rounded-lg transform rotate-[-10deg] z-0"></div>
                     <div className="bg-white p-8 rounded-lg shadow-lg relative z-10">
                         <h2 className="text-2xl font-bold mb-6 font-sans text-black">
-                            เข้าสู่ระบบ admin
+                            เข้าสู่ระบบ
                         </h2>
                         <form onSubmit={handleLogin} className="">
                             <div className="mb-4">

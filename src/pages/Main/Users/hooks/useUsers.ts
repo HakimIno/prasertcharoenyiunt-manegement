@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import supabase from '../../../../utils/supabase';
 import { User } from '../../../../types';
-
-// Define a type for user data
-
 
 interface UseUsersResult {
     users: User[];
     loading: boolean;
     error: string | null;
+    fetchUsers: any
 }
 
 export const useUsers = (): UseUsersResult => {
@@ -16,32 +14,32 @@ export const useUsers = (): UseUsersResult => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            setLoading(true);
-            try {
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('*');
+    const fetchUsers = useCallback(async () => {
+        setLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .select('*');
 
-                if (error) {
-                    throw new Error(error.message);
-                }
-
-                setUsers(data || []);
-            } catch (error) {
-                if (error instanceof Error) {
-                    setError(error.message);
-                } else {
-                    setError('An unexpected error occurred');
-                }
-            } finally {
-                setLoading(false);
+            if (error) {
+                throw new Error(error.message);
             }
-        };
 
-        fetchUsers();
+            setUsers(data || []);
+        } catch (error) {
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError('An unexpected error occurred');
+            }
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
-    return { users, loading, error };
+    useEffect(() => {
+        fetchUsers();
+    }, [fetchUsers]);
+
+    return { users, loading, error, fetchUsers };
 };

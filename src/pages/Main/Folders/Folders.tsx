@@ -18,9 +18,10 @@ import { useUpdateFile } from '../../../hooks/useUpdateFile';
 import { useCreateBranch } from '../../../hooks/useCreateBranch';
 import { useCreateTypeCar } from '../../../hooks/useCreateTypeCar';
 import { useFetchTypeCar } from '../../../hooks/useFetchTypeCar';
+import { useAuth } from '../../../context/AuthContext';
 
 export default function Folders() {
-
+    const { role } = useAuth();
     const [searchQuery, setSearchQuery] = useState<string>('');
     const { files, loading } = useFetchFiles(searchQuery);
     const dataBranchs = useFetchBranchs()
@@ -136,23 +137,25 @@ export default function Folders() {
                                     <EllipsisVerticalIcon className="w-5 h-5 " />
                                 </Button>
                             </DropdownMenu.Trigger>
-                            <DropdownMenu.Content variant="soft" color="gray">
-                                <DropdownMenu.Item shortcut="⌘ E" onSelect={() => {
-                                    setSeletedId(row?.id)
-                                    setOpenEdit(true)
-                                }}>
-                                    <PencilIcon className="w-3 h-3" />
-                                    <span className={"font-medium"}>แก้ไข</span>
-                                </DropdownMenu.Item>
-                                <DropdownMenu.Separator />
-                                <DropdownMenu.Item shortcut="⌘ D" color="red" onSelect={() => {
-                                    setSeletedId(row?.id)
-                                    setOpen(true)
-                                }}>
-                                    <TrashIcon className="w-3 h-3 text-red-600" />
-                                    <span className={"font-medium"}>ลบ</span>
-                                </DropdownMenu.Item>
-                            </DropdownMenu.Content>
+                            {(role === "superadmin" || role === "admin") && (
+                                <DropdownMenu.Content variant="soft" color="gray">
+                                    <DropdownMenu.Item shortcut="⌘ E" onSelect={() => {
+                                        setSeletedId(row?.id)
+                                        setOpenEdit(true)
+                                    }}>
+                                        <PencilIcon className="w-3 h-3" />
+                                        <span className={"font-medium"}>แก้ไข</span>
+                                    </DropdownMenu.Item>
+                                    <DropdownMenu.Separator />
+                                    <DropdownMenu.Item shortcut="⌘ D" color="red" onSelect={() => {
+                                        setSeletedId(row?.id)
+                                        setOpen(true)
+                                    }}>
+                                        <TrashIcon className="w-3 h-3 text-red-600" />
+                                        <span className={"font-medium"}>ลบ</span>
+                                    </DropdownMenu.Item>
+                                </DropdownMenu.Content>
+                            )}
                         </DropdownMenu.Root>
 
                         <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -283,112 +286,114 @@ export default function Folders() {
                                     placeholder="สาขา"
                                 />
                             </Flex>
-                            <Flex gap={"3"}>
-                                <Dialog.Root>
-                                    <Dialog.Trigger>
-                                        {/* @ts-ignore*/}
-                                        <Button color="cyan" variant="soft">สร้างสาขา</Button>
-                                    </Dialog.Trigger>
+                            {(role === "superadmin" || role === "admin") && (
+                                <Flex gap={"3"}>
 
-                                    <Dialog.Content maxWidth="450px">
-                                        <Dialog.Title>สร้างสาขา</Dialog.Title>
+                                    <Dialog.Root>
+                                        <Dialog.Trigger>
+                                            {/* @ts-ignore*/}
+                                            <Button color="cyan" variant="soft">สร้างสาขา</Button>
+                                        </Dialog.Trigger>
 
-                                        <Flex direction="column" gap="3">
-                                            <label>
-                                                <Text as="div" size="2" mb="1" weight="bold">
-                                                    สาขา
-                                                </Text>
-                                                <input
-                                                    type="text"
-                                                    value={branchName}
-                                                    onChange={(e: any) => setBranchName(e.target.value)}
-                                                    placeholder="กรอกชื่อสาขา"
-                                                    style={{
-                                                        padding: '8px',
-                                                        width: '100%',
-                                                        boxSizing: 'border-box',
-                                                        borderRadius: '4px',
-                                                        border: '1px solid #ccc',
-                                                    }}
-                                                />
-                                            </label>
-                                        </Flex>
+                                        <Dialog.Content maxWidth="450px">
+                                            <Dialog.Title>สร้างสาขา</Dialog.Title>
 
-                                        <Flex gap="3" mt="4" justify="end">
-                                            <Dialog.Close>
-                                                {/* @ts-ignore */}
-                                                <Button variant="soft" color="gray">
-                                                    ยกเลิก
-                                                </Button>
-                                            </Dialog.Close>
-                                            <Dialog.Close>
+                                            <Flex direction="column" gap="3">
+                                                <label>
+                                                    <Text as="div" size="2" mb="1" weight="bold">
+                                                        สาขา
+                                                    </Text>
+                                                    <input
+                                                        type="text"
+                                                        value={branchName}
+                                                        onChange={(e: any) => setBranchName(e.target.value)}
+                                                        placeholder="กรอกชื่อสาขา"
+                                                        style={{
+                                                            padding: '8px',
+                                                            width: '100%',
+                                                            boxSizing: 'border-box',
+                                                            borderRadius: '4px',
+                                                            border: '1px solid #ccc',
+                                                        }}
+                                                    />
+                                                </label>
+                                            </Flex>
 
-                                                <button onClick={handleCreateBranch} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center">
-                                                    {loadingCreateBranch ? <Spinner size="3" /> : <span className={"font-semibold"}>สร้าง</span>}
-                                                </button>
-                                            </Dialog.Close>
-                                        </Flex>
-                                    </Dialog.Content>
-                                </Dialog.Root>
+                                            <Flex gap="3" mt="4" justify="end">
+                                                <Dialog.Close>
+                                                    {/* @ts-ignore */}
+                                                    <Button variant="soft" color="gray">
+                                                        ยกเลิก
+                                                    </Button>
+                                                </Dialog.Close>
+                                                <Dialog.Close>
 
-                                <Dialog.Root>
-                                    <Dialog.Trigger>
-                                        {/* @ts-ignore*/}
-                                        <Button color="crimson" variant="soft">สร้างประเภทรถ</Button>
-                                    </Dialog.Trigger>
+                                                    <button onClick={handleCreateBranch} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center">
+                                                        {loadingCreateBranch ? <Spinner size="3" /> : <span className={"font-semibold"}>สร้าง</span>}
+                                                    </button>
+                                                </Dialog.Close>
+                                            </Flex>
+                                        </Dialog.Content>
+                                    </Dialog.Root>
 
-                                    <Dialog.Content maxWidth="450px">
-                                        <Dialog.Title>สร้างประเภทรถ</Dialog.Title>
+                                    <Dialog.Root>
+                                        <Dialog.Trigger>
+                                            {/* @ts-ignore*/}
+                                            <Button color="crimson" variant="soft">สร้างประเภทรถ</Button>
+                                        </Dialog.Trigger>
 
-                                        <Flex direction="column" gap="3">
-                                            <label>
-                                                <Text as="div" size="2" mb="1" weight="bold">
-                                                    ประเภทรถ
-                                                </Text>
-                                                <input
-                                                    type="text"
-                                                    value={typeCarName}
-                                                    onChange={(e: any) => setTypeCarName(e.target.value)}
-                                                    placeholder="กรอกชื่อประเภทรถ"
-                                                    style={{
-                                                        padding: '8px',
-                                                        width: '100%',
-                                                        boxSizing: 'border-box',
-                                                        borderRadius: '4px',
-                                                        border: '1px solid #ccc',
-                                                    }}
-                                                />
-                                            </label>
-                                        </Flex>
+                                        <Dialog.Content maxWidth="450px">
+                                            <Dialog.Title>สร้างประเภทรถ</Dialog.Title>
 
-                                        <Flex gap="3" mt="4" justify="end">
-                                            <Dialog.Close>
-                                                {/* @ts-ignore */}
-                                                <Button variant="soft" color="gray">
-                                                    ยกเลิก
-                                                </Button>
-                                            </Dialog.Close>
-                                            <Dialog.Close>
-                                                <button onClick={handleCreateTypeCars} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center">
-                                                    {loadingCreateTypeCar ? <Spinner size="3" /> : <span className={"font-semibold"}>สร้าง</span>}
-                                                </button>
-                                            </Dialog.Close>
-                                        </Flex>
-                                    </Dialog.Content>
-                                </Dialog.Root>
+                                            <Flex direction="column" gap="3">
+                                                <label>
+                                                    <Text as="div" size="2" mb="1" weight="bold">
+                                                        ประเภทรถ
+                                                    </Text>
+                                                    <input
+                                                        type="text"
+                                                        value={typeCarName}
+                                                        onChange={(e: any) => setTypeCarName(e.target.value)}
+                                                        placeholder="กรอกชื่อประเภทรถ"
+                                                        style={{
+                                                            padding: '8px',
+                                                            width: '100%',
+                                                            boxSizing: 'border-box',
+                                                            borderRadius: '4px',
+                                                            border: '1px solid #ccc',
+                                                        }}
+                                                    />
+                                                </label>
+                                            </Flex>
 
-                                <DialogInput
-                                    trigger={
-                                        //@ts-ignore
-                                        <Button radius="large" variant="surface" className="font-custom" >
-                                            <PlusIcon className={"w-4 h-4"} />
-                                            <span className={"font-medium"}>เพิ่มไฟล์</span>
-                                        </Button>
-                                    }
-                                    title='เพิ่มไฟล์'
-                                />
-                            </Flex>
+                                            <Flex gap="3" mt="4" justify="end">
+                                                <Dialog.Close>
+                                                    {/* @ts-ignore */}
+                                                    <Button variant="soft" color="gray">
+                                                        ยกเลิก
+                                                    </Button>
+                                                </Dialog.Close>
+                                                <Dialog.Close>
+                                                    <button onClick={handleCreateTypeCars} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center">
+                                                        {loadingCreateTypeCar ? <Spinner size="3" /> : <span className={"font-semibold"}>สร้าง</span>}
+                                                    </button>
+                                                </Dialog.Close>
+                                            </Flex>
+                                        </Dialog.Content>
+                                    </Dialog.Root>
 
+                                    <DialogInput
+                                        trigger={
+                                            //@ts-ignore
+                                            <Button radius="large" variant="surface" className="font-custom" >
+                                                <PlusIcon className={"w-4 h-4"} />
+                                                <span className={"font-medium"}>เพิ่มไฟล์</span>
+                                            </Button>
+                                        }
+                                        title='เพิ่มไฟล์'
+                                    />
+                                </Flex>
+                            )}
                         </Flex>
                         <Box>
                             <Tabs.Root defaultValue="all">
