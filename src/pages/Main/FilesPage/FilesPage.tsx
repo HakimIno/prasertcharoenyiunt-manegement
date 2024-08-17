@@ -10,6 +10,7 @@ import { useUpdateFile } from '../../../hooks/useUpdateFile';
 import { useDeleteFile } from '../../../hooks/useDeleteFile';
 import { useGlobalState } from '../../../context/GlobalStateProvider';
 import { useAuth } from '../../../context/AuthContext';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function FilesPage() {
     const { branchId, typeCarId } = useParams(); // รับ branchId และ typeCarId จาก URL
@@ -30,32 +31,70 @@ export default function FilesPage() {
 
     const { handleDelete, loading: deleteLoading } = useDeleteFile();
 
-    const handleDeleteClick = () => {
-        handleDelete(Number(selectedId), fileItem?.file_id, fileItem?.storage_provider);
-        setSelectedId(null);
-        setFileItem({ filename: '', file_id: '', storage_provider: '' })
+
+    const { files: dataFiles, loading: loadingDataFiles, fetchFilesWithIcons } = useFetchFiles('', Number(branchId), Number(typeCarId)); // ดึงข้อมูล Files พร้อมกรองด้วย branchId และ typeCarId
+
+    const { viewMode, toggleViewMode } = useGlobalState();
+    const { role } = useAuth();
+
+    const handleDeleteClick = async () => {
+        if (selectedId !== null) {
+            try {
+                const result = await handleDelete(Number(selectedId), fileItem?.file_id, fileItem?.storage_provider);
+                if (result) {
+                    toast.success("ลบไฟล์เรียบร้อยแล้ว");
+                    setSelectedId(null);
+                    setFileItem({ filename: '', file_id: '', storage_provider: '' });
+                    fetchFilesWithIcons()
+                } else {
+                    toast.error("การลบไฟล์ล้มเหลว");
+                }
+            } catch (error) {
+                toast.error("เกิดข้อผิดพลาดในการลบไฟล์");
+            }
+        } else {
+            toast.error("มีบางอย่างไม่ถูกต้อง!");
+        }
     };
 
+
     const handleUpdateClick = async () => {
-        const updatedFilename = `${newFilename}.${fileItem.filename.split('.').pop()}`;
-        console.log("updatedFilename", updatedFilename);
-        await handleUpdateFile(Number(selectedId), updatedFilename);
-        setSelectedId(null);
-        setFileItem({ filename: '', file_id: '', storage_provider: '' })
+        if (selectedId !== null) {
+            try {
+                const updatedFilename = `${newFilename}.${fileItem.filename.split('.').pop()}`;
+
+                const result = await handleUpdateFile(Number(selectedId), updatedFilename);
+
+                if (result) {
+                    toast.success("อัปเดตชื่อไฟล์เรียบร้อยแล้ว");
+                    setSelectedId(null);
+                    setFileItem({ filename: '', file_id: '', storage_provider: '' });
+                    fetchFilesWithIcons()
+                } else {
+                    toast.error("การอัปเดตชื่อไฟล์ล้มเหลว");
+                }
+            } catch (error) {
+                toast.error("เกิดข้อผิดพลาดในการอัปเดตชื่อไฟล์");
+                console.error("Error updating file:", error);
+            }
+        } else {
+            toast.error("มีบางอย่างไม่ถูกต้อง!");
+        }
     };
+
 
     const navigate = useNavigate(); // สร้าง hook navigate สำหรับการนำทาง
     const handleBackClick = () => {
         navigate(-1); // นำทางกลับไปหน้าก่อนหน้านี้
     };
 
-    const { files: dataFiles, loading: loadingDataFiles } = useFetchFiles('', Number(branchId), Number(typeCarId)); // ดึงข้อมูล Files พร้อมกรองด้วย branchId และ typeCarId
-
-    const { viewMode, toggleViewMode } = useGlobalState();
-    const { role } = useAuth();
 
     return (
         <FoldersContainer className="w-full h-full flex justify-center bg-slate-50">
+            <Toaster
+                position="top-right"
+                reverseOrder={false}
+            />
             <div className="max-w-screen-2xl w-full flex flex-col bg-white my-5 p-10 rounded-xl">
                 <Flex direction="column" gap="2">
                     <Flex align={'center'} gap={"3"}>
@@ -83,6 +122,7 @@ export default function FilesPage() {
                                     title='เพิ่มไฟล์'
                                     branchId={Number(branchId)}
                                     typeCarId={Number(typeCarId)}
+                                    fetchFilesWithIcons={fetchFilesWithIcons}
                                 />
                             )}
                         </div>

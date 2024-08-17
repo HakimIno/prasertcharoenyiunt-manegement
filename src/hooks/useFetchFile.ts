@@ -82,5 +82,5 @@ export const useFetchFiles = (searchQuery = '', branchId: number | null, typeCar
         };
     }, [searchQuery, branchId, typeCarId]);
 
-    return { files: loading ? cachedFiles : files, loading };
+    return { files: loading ? cachedFiles : files, loading, fetchFilesWithIcons };
 };

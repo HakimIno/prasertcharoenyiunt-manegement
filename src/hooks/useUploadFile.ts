@@ -163,7 +163,7 @@ export const useFileUpload = () => {
                 const fileType = file.type.split('/')[1];
                 let storage_provider = "";
 
-                if (['jpeg', 'jpg', 'png'].includes(fileType)) {
+                if (['jpeg', 'jpg', 'png', 'gif', 'JPG', "JPEG", 'PNG', 'GIf'].includes(fileType)) {
                     fileId = await uploadFileToCloudinary(file);
                     storage_provider = "cloudinary";
                 } else {

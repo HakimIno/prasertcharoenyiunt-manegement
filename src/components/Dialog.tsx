@@ -10,9 +10,10 @@ interface Props {
     title: string;
     branchId: number;   // รับ branchId จาก props
     typeCarId: number;  // รับ typeCarId จาก props
+    fetchFilesWithIcons: any
 }
 
-const DialogInput = ({ trigger, title, branchId, typeCarId }: Props) => {
+const DialogInput = ({ trigger, title, branchId, typeCarId, fetchFilesWithIcons }: Props) => {
     const { files, handleUpload, loading, setFiles } = useFileUpload();
     const closeDialogRef = useRef<HTMLButtonElement>(null);
 
@@ -51,6 +52,7 @@ const DialogInput = ({ trigger, title, branchId, typeCarId }: Props) => {
             await handleUpload(branchId, typeCarId);
             closeDialogRef.current?.click();
             toast.success("อัปโหลดไฟล์เรียบร้อย")
+            fetchFilesWithIcons()
         } else {
             toast.error("กรุณาเลือกไฟล์ก่อนทำการอัปโหลด")
         }
