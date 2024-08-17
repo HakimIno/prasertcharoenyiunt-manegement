@@ -5,24 +5,16 @@ import { getTokens } from '../utils/getTokens';
 import { endpoint } from '../utils/http';
 
 export const useFileUpload = () => {
-    const [file, setFile] = useState<File | null>(null);
-    const [seleteBranch, setSeleteBranch] = useState<number>(1);
-    const [seleteTypeCars, setSeleteTypeCars] = useState<number>(1);
-
+    const [files, setFiles] = useState<File[]>([]); // เก็บไฟล์หลายไฟล์ใน array
     const [loading, setLoading] = useState<boolean>(false);
     const { user } = useAuth();
 
-    const handleSelection = (option: number) => {
-        setSeleteBranch(option);
-    };
-
-    const handleSelectionTypeCars = (option: number) => {
-        setSeleteTypeCars(option);
-    };
-
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         //@ts-ignore
-        setFile(e.target.files?.[0] || null);
+        if (e.target.files) {
+            //@ts-ignore
+            setFiles(Array.from(e.target.files));
+        }
     };
 
     const fetchUserData = async () => {
@@ -98,7 +90,10 @@ export const useFileUpload = () => {
         owner: string,
         fileType: string,
         iconId: number,
-        fileId: string
+        fileId: string,
+        storage_provider: string,
+        branchId: number,
+        typeCarId: number
     ) => {
         try {
             const uniqueFilename = await generateUniqueFilename(filename, owner);
@@ -111,8 +106,9 @@ export const useFileUpload = () => {
                     creationdate: new Date(),
                     icon_id: iconId,
                     file_id: fileId,
-                    branch_id: seleteBranch,
-                    type_car_id: seleteTypeCars
+                    branch_id: branchId,
+                    type_car_id: typeCarId,
+                    storage_provider
                 },
             ]);
 
@@ -123,6 +119,20 @@ export const useFileUpload = () => {
             console.error('Error in insertFileData:', err);
             throw new Error('Error inserting file data');
         }
+    };
+
+    const uploadFileToCloudinary = async (file: File): Promise<string> => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', 'prasert');
+
+        const response = await fetch('https://api.cloudinary.com/v1_1/dkm0oeset/upload', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const data = await response.json();
+        return data.public_id; // Assume that the response contains the fileId
     };
 
     const uploadFileToGoogleDrive = async (file: File): Promise<string> => {
@@ -140,39 +150,55 @@ export const useFileUpload = () => {
         return response.data.id; // Assume that the response contains the fileId
     };
 
-    const handleUpload = async () => {
-        if (!file) return;
+    const handleUpload = async (branchId: number, typeCarId: number) => {
+        if (files.length === 0) return;
 
         setLoading(true);
 
         try {
-            const fileId = await uploadFileToGoogleDrive(file);
+            const userData = await fetchUserData();
 
-            if (fileId) {
-                const userData = await fetchUserData();
-                const iconId = fetchIconData(file.type.split('/')[1]);
+            for (let file of files) {
+                let fileId;
+                const fileType = file.type.split('/')[1];
+                let storage_provider = "";
 
-                await insertFileData(
-                    file.name,
-                    `${userData.firstname} ${userData.lastname}`,
-                    file.type,
-                    iconId,
-                    fileId
-                );
+                if (['jpeg', 'jpg', 'png'].includes(fileType)) {
+                    fileId = await uploadFileToCloudinary(file);
+                    storage_provider = "cloudinary";
+                } else {
+                    fileId = await uploadFileToGoogleDrive(file);
+                    storage_provider = "google_drive";
+                }
+
+                if (fileId && storage_provider) {
+                    const iconId = fetchIconData(fileType);
+
+                    await insertFileData(
+                        file.name,
+                        `${userData.firstname} ${userData.lastname}`,
+                        file.type,
+                        iconId,
+                        fileId,
+                        storage_provider,
+                        branchId,
+                        typeCarId
+                    );
+                }
             }
         } catch (error) {
             console.error('Error during file upload process:', error);
         } finally {
             setLoading(false);
+            setFiles([]); // ล้างไฟล์หลังจากอัปโหลดเสร็จ
         }
     };
 
     return {
-        file,
+        files,
         loading,
         handleFileChange,
         handleUpload,
-        handleSelection,
-        handleSelectionTypeCars
+        setFiles
     };
 };

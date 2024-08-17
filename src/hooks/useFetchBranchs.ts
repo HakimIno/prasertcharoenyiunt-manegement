@@ -3,8 +3,10 @@ import supabase from '../utils/supabase';
 
 export const useFetchBranchs = () => {
     const [dataBranchs, setDataBranchs] = useState<{ id: number, branch_name: string }[]>([]);
+    const [loading, setLoading] = useState<boolean>(true); // เพิ่มสถานะ loading
 
     const fetchBranchs = async () => {
+        setLoading(true); // เริ่มการโหลด
         const { data, error } = await supabase
             .from('branchs')
             .select('*')
@@ -15,13 +17,12 @@ export const useFetchBranchs = () => {
         } else {
             setDataBranchs(data);
         }
+        setLoading(false); // สิ้นสุดการโหลด
     };
 
     useEffect(() => {
-        // Fetch the data once when the component mounts
         fetchBranchs();
 
-        // Set up a Realtime subscription to listen for changes
         const channel = supabase
             .channel('public:branchs')
             .on(
@@ -34,11 +35,10 @@ export const useFetchBranchs = () => {
             )
             .subscribe();
 
-        // Cleanup subscription on component unmount
         return () => {
             supabase.removeChannel(channel);
         };
-    }, []); // Empty dependency array ensures it only runs once on mount
+    }, []);
 
-    return dataBranchs;
+    return { dataBranchs, loading, fetchBranchs }; // ส่งค่า loading กลับไปด้วย
 };

@@ -25,10 +25,13 @@ export const useDeleteFile = () => {
         }
     };
 
-    const handleDelete = async (id: number, fileId: string) => {
+
+    const handleDelete = async (id: number, fileId: string, storageProvider: string) => {
         setLoading(true);
         try {
-            await deleteFileToGoogleDrive(fileId);
+            if (storageProvider === 'google_drive') {
+                await deleteFileToGoogleDrive(fileId);
+            }
 
             const { data, error } = await supabase
                 .from('files')
@@ -51,8 +54,9 @@ export const useDeleteFile = () => {
         }
     };
 
+
     return {
         handleDelete,
-        loading, // เพิ่ม state loading เพื่อให้คุณสามารถใช้ใน UI ได้
+        loading,
     };
 };

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import supabase from '../utils/supabase';
 
-export const useFetchFiles = (searchQuery = '') => {
+export const useFetchFiles = (searchQuery = '', branchId: number | null, typeCarId: number | null) => {
     const [files, setFiles] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [cachedFiles, setCachedFiles] = useState<any[]>([]);
@@ -17,6 +17,8 @@ export const useFetchFiles = (searchQuery = '') => {
                 filename,
                 creationdate,
                 owner,
+                storage_provider,
+                file_id,
                 icon (
                     id,
                     icon_url
@@ -30,6 +32,14 @@ export const useFetchFiles = (searchQuery = '') => {
                     car_type_name
                 )
             `).order('creationdate', { ascending: false });
+
+        // เพิ่มเงื่อนไขสำหรับ branch_id และ type_cars_id
+        if (branchId !== null) {
+            query = query.eq('branch_id', branchId); // ตรวจสอบว่า column ชื่อ branch_id
+        }
+        if (typeCarId !== null) {
+            query = query.eq('type_car_id', typeCarId); // ตรวจสอบว่า column ชื่อ type_car_id
+        }
 
         const { data, error } = await query;
 
@@ -50,9 +60,7 @@ export const useFetchFiles = (searchQuery = '') => {
         setCachedFiles(filteredData);
         setFiles(filteredData);
 
-        setTimeout(() => {
-            setLoading(false);
-        }, 1000);
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -63,8 +71,7 @@ export const useFetchFiles = (searchQuery = '') => {
             .on(
                 'postgres_changes',
                 { event: '*', schema: 'public', table: 'files' },
-                (payload) => {
-                    console.log('Change received!', payload);
+                (_payload) => {
                     fetchFilesWithIcons();
                 }
             )
@@ -73,7 +80,7 @@ export const useFetchFiles = (searchQuery = '') => {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [searchQuery]);
+    }, [searchQuery, branchId, typeCarId]);
 
     return { files: loading ? cachedFiles : files, loading };
 };

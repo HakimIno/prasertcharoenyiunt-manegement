@@ -9,6 +9,8 @@ import VerifyEmail from '../components/VerifyEmail';
 import Support from '../pages/Support';
 import Page404 from '../pages/Page404';
 import PrivacyPolicy from '../pages/PrivacyPolicy';
+import TypeCarsPage from '../pages/Main/TypeCarsPage';
+import FilesPage from '../pages/Main/FilesPage';
 
 export default function Router() {
     const { user } = useAuth();
@@ -43,6 +45,8 @@ export default function Router() {
                 <Route index element={<Main.Folders />} />
                 <Route path="users" element={<Main.Users />} />
                 <Route path="folders" element={<Main.Folders />} />
+                <Route path="/branches/:branchId/typecars" element={<TypeCarsPage />} />
+                <Route path="/branches/:branchId/typecars/:typeCarId/files" element={<FilesPage />} /> {/* เพิ่ม Route สำหรับ FilesPage */}
             </Route>
             <Route path="*" element={<Page404 />} />
             <Route path="/support" element={<Support />} />

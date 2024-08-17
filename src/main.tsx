@@ -7,6 +7,7 @@ import { AuthProvider } from './context/AuthContext';
 import { Theme } from '@radix-ui/themes'
 import '@radix-ui/themes/styles.css';
 import { EmailVerificationProvider } from './context/EmailVerificationContext';
+import { GlobalStateProvider } from './context/GlobalStateProvider';
 
 const rootElement = document.getElementById('app');
 if (rootElement) {
@@ -17,7 +18,9 @@ if (rootElement) {
                     <HashRouter>
                         <div className="font-sukhumvit font-medium">
                             <EmailVerificationProvider>
-                                <Router />
+                                <GlobalStateProvider>
+                                    <Router />
+                                </GlobalStateProvider>
                             </EmailVerificationProvider>
                         </div>
                     </HashRouter>
