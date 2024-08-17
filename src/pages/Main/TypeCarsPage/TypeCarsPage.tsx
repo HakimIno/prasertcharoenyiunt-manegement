@@ -4,7 +4,7 @@ import { useFetchTypeCar } from '../../../hooks/useFetchTypeCar';
 import { Box, Button, Dialog, DropdownMenu, Flex, Spinner, Text } from '@radix-ui/themes';
 import { FoldersContainer } from '../Folders/Folders.styles';
 import { useCreateTypeCar } from '../../../hooks/useCreateTypeCar';
-import { ArrowLeftIcon, ChevronRightIcon, EllipsisVerticalIcon, FolderPlusIcon, PencilIcon, QueueListIcon, Squares2X2Icon, TrashIcon } from '@heroicons/react/24/solid';
+import { ArrowLeftIcon, ChevronRightIcon, EllipsisVerticalIcon, FaceFrownIcon, FolderPlusIcon, PencilIcon, QueueListIcon, Squares2X2Icon, TrashIcon } from '@heroicons/react/24/solid';
 import { useGlobalState } from '../../../context/GlobalStateProvider';
 import toast, { Toaster } from 'react-hot-toast';
 import { useUpdateTypeCar } from '../../../hooks/useUpdateTypeCar';
@@ -174,118 +174,129 @@ export default function TypeCarsPage() {
                                 <p className={"font-sukhumvit font-semibold"}>กำลังโหลด...</p>
                             </div>
                         ) : (
-                            dataTypeCars.map(typeCar => (
-                                <Box
-                                    key={typeCar.id}
-                                    onClick={() => handleTypeCarClick(typeCar.id, typeCar.car_type_name)} // เ
-                                    className="relative cursor-pointer p-2 rounded-lg hover:bg-slate-50"
-                                >
-                                    <div className={viewMode === 'grid' ? 'w-40 h-40 flex flex-col items-center justify-center' : 'w-full flex items-center'}>
-                                        <img
-                                            src="https://gpamonnosfwdoxjvyrcw.supabase.co/storage/v1/object/public/media/FIleIcon/folder.png"
-                                            alt="iconfolder"
-                                            className={viewMode === 'grid' ? 'w-16 h-16 mb-4' : 'w-8 h-8 mr-4'}
-                                        />
-                                        <div className=" font-sukhumvit font-semibold line-clamp-2">
-                                            {typeCar.car_type_name}
+                            <>
+                                {dataTypeCars.length === 0 ? (
+                                    <div className="text-center text-gray-500  w-full h-full mt-20 justify-center flex">
+                                        <div className="flex flex-col items-center justify-center">
+                                            <FaceFrownIcon className={"w-28 h-28 text-zinc-200"} />
+                                            ไม่มีข้อมูล
                                         </div>
                                     </div>
+                                ) : (
+                                    dataTypeCars.map(typeCar => (
+                                        <Box
+                                            key={typeCar.id}
+                                            onClick={() => handleTypeCarClick(typeCar.id, typeCar.car_type_name)} // เ
+                                            className="relative cursor-pointer p-2 rounded-lg hover:bg-slate-50"
+                                        >
+                                            <div className={viewMode === 'grid' ? 'w-40 h-40 flex flex-col items-center justify-center' : 'w-full flex items-center'}>
+                                                <img
+                                                    src="https://gpamonnosfwdoxjvyrcw.supabase.co/storage/v1/object/public/media/FIleIcon/folder.png"
+                                                    alt="iconfolder"
+                                                    className={viewMode === 'grid' ? 'w-16 h-16 mb-4' : 'w-8 h-8 mr-4'}
+                                                />
+                                                <div className=" font-sukhumvit font-semibold line-clamp-2">
+                                                    {typeCar.car_type_name}
+                                                </div>
+                                            </div>
 
-                                    {(role === "superadmin" || role === "admin") && (
-                                        <Flex gap="2" ml="3" className={`absolute  right-2 ${viewMode === 'grid' ? "top-2" : "top-3"} `}>
+                                            {(role === "superadmin" || role === "admin") && (
+                                                <Flex gap="2" ml="3" className={`absolute  right-2 ${viewMode === 'grid' ? "top-2" : "top-3"} `}>
 
-                                            <DropdownMenu.Root>
-                                                <DropdownMenu.Trigger asChild>
-                                                    <EllipsisVerticalIcon className="w-6 h-6 text-[#1a1a1a]" />
-                                                </DropdownMenu.Trigger>
-                                                <DropdownMenu.Content variant="soft" color="gray">
-                                                    <DropdownMenu.Item onSelect={() => { setTypeCarId(typeCar.id); setOpenEdit(true); }}>
-                                                        <div className="flex flex-row gap-5 items-center justify-between">
-                                                            <PencilIcon className="w-3 h-3" />
-                                                            <span className="font-medium">แก้ไข</span>
+                                                    <DropdownMenu.Root>
+                                                        <DropdownMenu.Trigger asChild>
+                                                            <EllipsisVerticalIcon className="w-6 h-6 text-[#1a1a1a]" />
+                                                        </DropdownMenu.Trigger>
+                                                        <DropdownMenu.Content variant="soft" color="gray">
+                                                            <DropdownMenu.Item onSelect={() => { setTypeCarId(typeCar.id); setOpenEdit(true); }}>
+                                                                <div className="flex flex-row gap-5 items-center justify-between">
+                                                                    <PencilIcon className="w-3 h-3" />
+                                                                    <span className="font-medium">แก้ไข</span>
+                                                                </div>
+                                                            </DropdownMenu.Item>
+                                                            <DropdownMenu.Separator />
+                                                            <DropdownMenu.Item color="red" onSelect={() => { setTypeCarId(typeCar.id); setOpen(true); }}>
+                                                                <div className="flex flex-row gap-5 items-center justify-between">
+                                                                    <TrashIcon className="w-3 h-3 text-red-600" />
+                                                                    <span className="font-medium">ลบ</span>
+                                                                </div>
+                                                            </DropdownMenu.Item>
+                                                        </DropdownMenu.Content>
+                                                    </DropdownMenu.Root>
+                                                </Flex>
+                                            )}
+
+
+                                            {/* Delete Dialog */}
+                                            <Dialog.Root open={open} onOpenChange={setOpen}>
+                                                <Dialog.Content maxWidth="450px">
+                                                    <Dialog.Title>
+                                                        <div className="font-semibold font-sukhumvit">
+                                                            คุณแน่ใจว่าต้องการลบโฟลเดอร์นี้หรือไม่?
                                                         </div>
-                                                    </DropdownMenu.Item>
-                                                    <DropdownMenu.Separator />
-                                                    <DropdownMenu.Item color="red" onSelect={() => { setTypeCarId(typeCar.id); setOpen(true); }}>
-                                                        <div className="flex flex-row gap-5 items-center justify-between">
-                                                            <TrashIcon className="w-3 h-3 text-red-600" />
-                                                            <span className="font-medium">ลบ</span>
+                                                    </Dialog.Title>
+                                                    <Dialog.Description>
+                                                        <div className="font-medium font-sukhumvit">
+                                                            หากคุณลบโฟลเดอร์นี้ จะไม่สามารถกู้คืนได้
                                                         </div>
-                                                    </DropdownMenu.Item>
-                                                </DropdownMenu.Content>
-                                            </DropdownMenu.Root>
-                                        </Flex>
-                                    )}
+                                                    </Dialog.Description>
+                                                    <Flex gap="3" mt="4" justify="end">
+                                                        <Dialog.Close asChild>
+                                                            {/* @ts-ignore */}
+                                                            <Button variant="soft" color="gray">
+                                                                <span className="font-semibold font-sukhumvit">ยกเลิก</span>
+                                                            </Button>
+                                                        </Dialog.Close>
+                                                        <Dialog.Close asChild>
+                                                            <button onClick={handleDelete} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 items-center flex justify-center">
+                                                                {deleting ? <Spinner size="2" /> : <span className={"font-semibold font-sukhumvit"}>ตกลง</span>}
+                                                            </button>
+                                                        </Dialog.Close>
+                                                    </Flex>
+                                                </Dialog.Content>
+                                            </Dialog.Root>
 
-
-                                    {/* Delete Dialog */}
-                                    <Dialog.Root open={open} onOpenChange={setOpen}>
-                                        <Dialog.Content maxWidth="450px">
-                                            <Dialog.Title>
-                                                <div className="font-semibold font-sukhumvit">
-                                                    คุณแน่ใจว่าต้องการลบโฟลเดอร์นี้หรือไม่?
-                                                </div>
-                                            </Dialog.Title>
-                                            <Dialog.Description>
-                                                <div className="font-medium font-sukhumvit">
-                                                    หากคุณลบโฟลเดอร์นี้ จะไม่สามารถกู้คืนได้
-                                                </div>
-                                            </Dialog.Description>
-                                            <Flex gap="3" mt="4" justify="end">
-                                                <Dialog.Close asChild>
-                                                    {/* @ts-ignore */}
-                                                    <Button variant="soft" color="gray">
-                                                        <span className="font-semibold font-sukhumvit">ยกเลิก</span>
-                                                    </Button>
-                                                </Dialog.Close>
-                                                <Dialog.Close asChild>
-                                                    <button onClick={handleDelete} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 items-center flex justify-center">
-                                                        {deleting ? <Spinner size="2" /> : <span className={"font-semibold font-sukhumvit"}>ตกลง</span>}
-                                                    </button>
-                                                </Dialog.Close>
-                                            </Flex>
-                                        </Dialog.Content>
-                                    </Dialog.Root>
-
-                                    {/* Edit Dialog */}
-                                    <Dialog.Root open={openEdit} onOpenChange={setOpenEdit}>
-                                        <Dialog.Content maxWidth="450px">
-                                            <Dialog.Title>
-                                                <div className="font-semibold font-sukhumvit">
-                                                    แก้ไขชื่อโฟลเดอร์
-                                                </div>
-                                            </Dialog.Title>
-                                            <Flex direction="column" gap="3">
-                                                <label>
-                                                    <Text as="div" size="2" mb="1" weight="bold">
-                                                        ชื่อโฟลเดอร์
-                                                    </Text>
-                                                    <input
-                                                        className="w-full p-2 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-blue-500"
-                                                        placeholder="กรอกชื่อโฟลเดอร์สาขาใหม่"
-                                                        value={newTypeCar}
-                                                        onChange={handleChange}
-                                                    />
-                                                </label>
-                                            </Flex>
-                                            <Flex gap="3" mt="4" justify="end">
-                                                <Dialog.Close asChild>
-                                                    {/* @ts-ignore */}
-                                                    <Button variant="soft" color="gray">
-                                                        <span className="font-semibold font-sukhumvit">ยกเลิก</span>
-                                                    </Button>
-                                                </Dialog.Close>
-                                                <Dialog.Close asChild>
-                                                    {/* @ts-ignore */}
-                                                    <button onClick={handleUpdate} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 items-center flex justify-center">
-                                                        {updating ? <Spinner size="2" /> : <span className={"font-semibold font-sukhumvit"}>ตกลง</span>}
-                                                    </button>
-                                                </Dialog.Close>
-                                            </Flex>
-                                        </Dialog.Content>
-                                    </Dialog.Root>
-                                </Box>
-                            ))
+                                            {/* Edit Dialog */}
+                                            <Dialog.Root open={openEdit} onOpenChange={setOpenEdit}>
+                                                <Dialog.Content maxWidth="450px">
+                                                    <Dialog.Title>
+                                                        <div className="font-semibold font-sukhumvit">
+                                                            แก้ไขชื่อโฟลเดอร์
+                                                        </div>
+                                                    </Dialog.Title>
+                                                    <Flex direction="column" gap="3">
+                                                        <label>
+                                                            <Text as="div" size="2" mb="1" weight="bold">
+                                                                ชื่อโฟลเดอร์
+                                                            </Text>
+                                                            <input
+                                                                className="w-full p-2 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-blue-500"
+                                                                placeholder="กรอกชื่อโฟลเดอร์สาขาใหม่"
+                                                                value={newTypeCar}
+                                                                onChange={handleChange}
+                                                            />
+                                                        </label>
+                                                    </Flex>
+                                                    <Flex gap="3" mt="4" justify="end">
+                                                        <Dialog.Close asChild>
+                                                            {/* @ts-ignore */}
+                                                            <Button variant="soft" color="gray">
+                                                                <span className="font-semibold font-sukhumvit">ยกเลิก</span>
+                                                            </Button>
+                                                        </Dialog.Close>
+                                                        <Dialog.Close asChild>
+                                                            {/* @ts-ignore */}
+                                                            <button onClick={handleUpdate} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 items-center flex justify-center">
+                                                                {updating ? <Spinner size="2" /> : <span className={"font-semibold font-sukhumvit"}>ตกลง</span>}
+                                                            </button>
+                                                        </Dialog.Close>
+                                                    </Flex>
+                                                </Dialog.Content>
+                                            </Dialog.Root>
+                                        </Box>
+                                    ))
+                                )}
+                            </>
                         )}
                     </Flex>
                 </Flex>
