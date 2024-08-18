@@ -34,14 +34,19 @@ export default function Folders() {
     const [openEdit, setOpenEdit] = useState(false);
 
     const handleCreateBranch = async () => {
-        try {
-            await createBranch(newBranch);
-            setNewBranch('');
-            alert('สาขาถูกสร้างเรียบร้อยแล้ว!');
-            window.location.reload();
-        } catch (error) {
-            alert('เกิดข้อผิดพลาดในการสร้างสาขา');
+        if (newBranch) {
+            try {
+                await createBranch(newBranch);
+                setNewBranch('');
+                toast.success("สาขาถูกสร้างเรียบร้อยแล้ว!")
+                fetchBranchs();
+            } catch (error: any) {
+                toast.error(error)
+            }
+        } else {
+            toast.error("กรุณากรอกชื่อสาขาใหม่")
         }
+
     };
 
     const handleUpdate = async () => {
