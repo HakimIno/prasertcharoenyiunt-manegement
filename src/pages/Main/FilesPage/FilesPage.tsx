@@ -2,7 +2,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Box, Button, Dialog, DropdownMenu, Flex, Spinner, Text } from '@radix-ui/themes';
 import { FoldersContainer } from '../Folders/Folders.styles';
 import { useFetchFiles } from '../../../hooks/useFetchFile';
-import { ArrowLeftIcon, ChevronRightIcon, EllipsisVerticalIcon, FaceFrownIcon, PencilIcon, PlusIcon, TrashIcon, } from '@heroicons/react/24/solid';
+import { ArrowLeftIcon, ChevronRightIcon, EllipsisVerticalIcon, FaceFrownIcon, PencilIcon, PlusCircleIcon, TrashIcon, } from '@heroicons/react/24/solid';
 import { QueueListIcon, Squares2X2Icon } from '@heroicons/react/24/solid';
 import { useState } from 'preact/hooks';
 import DialogInput from '../../../components/Dialog';
@@ -106,18 +106,17 @@ export default function FilesPage() {
                     <Flex direction="row" justify="between" align="center" gap="3">
                         <div className=""></div>
                         <div className="flex items-center gap-3">
-                            <button onClick={toggleViewMode} className="bg-sky-50 p-1.5 rounded-lg">
-                                {viewMode === 'grid' ? <QueueListIcon className={"w-6 h-6 text-sky-600"} /> : <Squares2X2Icon className={"w-6 h-6 text-sky-600"} />}
+                            <button onClick={toggleViewMode} className="bg-zinc-100 p-1.5 rounded-lg">
+                                {viewMode === 'grid' ? <QueueListIcon className={"w-6 h-6 text-gray-800"} /> : <Squares2X2Icon className={"w-6 h-6 text-gray-800"} />}
                             </button>
 
                             {(role === "superadmin" || role === "admin") && (
                                 <DialogInput
                                     trigger={
-                                        //@ts-ignore
-                                        <Button radius="large" variant="soft" className="font-custom" >
-                                            <PlusIcon className={"w-4 h-4"} />
+                                        <button className="p-1.5 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center gap-2">
+                                            <PlusCircleIcon className={"w-4 h-4 text-white"} />
                                             <span className={"font-medium"}>เพิ่มไฟล์</span>
-                                        </Button>
+                                        </button>
                                     }
                                     title='เพิ่มไฟล์'
                                     branchId={Number(branchId)}
@@ -191,72 +190,7 @@ export default function FilesPage() {
                                             )}
 
 
-                                            {/* Delete Dialog */}
-                                            <Dialog.Root open={open} onOpenChange={setOpen}>
-                                                <Dialog.Content maxWidth="450px">
-                                                    <Dialog.Title>
-                                                        <div className="font-semibold font-sukhumvit">
-                                                            คุณแน่ใจว่าต้องการลบไฟล์นี้หรือไม่?
-                                                        </div>
-                                                    </Dialog.Title>
-                                                    <Dialog.Description>
-                                                        <div className="font-medium font-sukhumvit">
-                                                            หากคุณลบไฟล์นี้ จะไม่สามารถกู้คืนได้
-                                                        </div>
-                                                    </Dialog.Description>
-                                                    <Flex gap="3" mt="4" justify="end">
-                                                        <Dialog.Close asChild>
-                                                            {/* @ts-ignore */}
-                                                            <Button variant="soft" color="gray">
-                                                                <span className="font-semibold font-sukhumvit">ยกเลิก</span>
-                                                            </Button>
-                                                        </Dialog.Close>
-                                                        <Dialog.Close asChild>
-                                                            <button onClick={handleDeleteClick} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 items-center flex justify-center">
-                                                                {deleteLoading ? <Spinner size="2" /> : <span className={"font-semibold font-sukhumvit"}>ตกลง</span>}
-                                                            </button>
-                                                        </Dialog.Close>
-                                                    </Flex>
-                                                </Dialog.Content>
-                                            </Dialog.Root>
 
-                                            {/* Edit Dialog */}
-                                            <Dialog.Root open={openEdit} onOpenChange={setOpenEdit}>
-                                                <Dialog.Content maxWidth="450px">
-                                                    <Dialog.Title>
-                                                        <div className="font-semibold font-sukhumvit">
-                                                            แก้ไขชื่อไฟล์
-                                                        </div>
-                                                    </Dialog.Title>
-                                                    <Flex direction="column" gap="3">
-                                                        <label>
-                                                            <Text as="div" size="2" mb="1" weight="bold">
-                                                                ชื่อไฟล์
-                                                            </Text>
-                                                            <input
-                                                                className="w-full p-2 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-blue-500"
-                                                                placeholder="กรอกชื่อไฟล์ใหม่ ไม่ต้องใส่ .png หรือ . อื่นๆ"
-                                                                value={newFilename}
-                                                                onChange={handleFilenameChange}
-                                                            />
-                                                        </label>
-                                                    </Flex>
-                                                    <Flex gap="3" mt="4" justify="end">
-                                                        <Dialog.Close asChild>
-                                                            {/* @ts-ignore */}
-                                                            <Button variant="soft" color="gray">
-                                                                <span className="font-semibold font-sukhumvit">ยกเลิก</span>
-                                                            </Button>
-                                                        </Dialog.Close>
-                                                        <Dialog.Close asChild>
-                                                            {/* @ts-ignore */}
-                                                            <button onClick={handleUpdateClick} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 items-center flex justify-center">
-                                                                {updateLoading ? <Spinner size="2" /> : <span className={"font-semibold font-sukhumvit"}>ตกลง</span>}
-                                                            </button>
-                                                        </Dialog.Close>
-                                                    </Flex>
-                                                </Dialog.Content>
-                                            </Dialog.Root>
                                         </Box>
                                     ))
                                 )
@@ -266,6 +200,73 @@ export default function FilesPage() {
                     </Flex>
                 </Flex>
             </div>
+
+            {/* Delete Dialog */}
+            <Dialog.Root open={open} onOpenChange={setOpen}>
+                <Dialog.Content maxWidth="450px">
+                    <Dialog.Title>
+                        <div className="font-semibold font-sukhumvit">
+                            คุณแน่ใจว่าต้องการลบไฟล์นี้หรือไม่?
+                        </div>
+                    </Dialog.Title>
+                    <Dialog.Description>
+                        <div className="font-medium font-sukhumvit">
+                            หากคุณลบไฟล์นี้ จะไม่สามารถกู้คืนได้
+                        </div>
+                    </Dialog.Description>
+                    <Flex gap="3" mt="4" justify="end">
+                        <Dialog.Close asChild>
+                            {/* @ts-ignore */}
+                            <Button variant="soft" color="gray">
+                                <span className="font-semibold font-sukhumvit">ยกเลิก</span>
+                            </Button>
+                        </Dialog.Close>
+                        <Dialog.Close asChild>
+                            <button onClick={handleDeleteClick} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 items-center flex justify-center">
+                                {deleteLoading ? <Spinner size="2" /> : <span className={"font-semibold font-sukhumvit"}>ตกลง</span>}
+                            </button>
+                        </Dialog.Close>
+                    </Flex>
+                </Dialog.Content>
+            </Dialog.Root>
+
+            {/* Edit Dialog */}
+            <Dialog.Root open={openEdit} onOpenChange={setOpenEdit}>
+                <Dialog.Content maxWidth="450px">
+                    <Dialog.Title>
+                        <div className="font-semibold font-sukhumvit">
+                            แก้ไขชื่อไฟล์
+                        </div>
+                    </Dialog.Title>
+                    <Flex direction="column" gap="3">
+                        <label>
+                            <Text as="div" size="2" mb="1" weight="bold">
+                                ชื่อไฟล์
+                            </Text>
+                            <input
+                                className="w-full p-2 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="กรอกชื่อไฟล์ใหม่ ไม่ต้องใส่ .png หรือ . อื่นๆ"
+                                value={newFilename}
+                                onChange={handleFilenameChange}
+                            />
+                        </label>
+                    </Flex>
+                    <Flex gap="3" mt="4" justify="end">
+                        <Dialog.Close asChild>
+                            {/* @ts-ignore */}
+                            <Button variant="soft" color="gray">
+                                <span className="font-semibold font-sukhumvit">ยกเลิก</span>
+                            </Button>
+                        </Dialog.Close>
+                        <Dialog.Close asChild>
+                            {/* @ts-ignore */}
+                            <button onClick={handleUpdateClick} className="w-16 h-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 items-center flex justify-center">
+                                {updateLoading ? <Spinner size="2" /> : <span className={"font-semibold font-sukhumvit"}>ตกลง</span>}
+                            </button>
+                        </Dialog.Close>
+                    </Flex>
+                </Dialog.Content>
+            </Dialog.Root>
         </FoldersContainer>
     );
 }

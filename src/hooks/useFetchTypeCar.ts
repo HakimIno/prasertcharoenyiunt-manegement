@@ -3,6 +3,7 @@ import supabase from '../utils/supabase';
 
 export const useFetchTypeCar = (branchId: unknown) => {
     const [dataTypeCars, setDataTypeCars] = useState<{ id: number, car_type_name: string }[]>([]);
+    const [dataTypeCarAll, setDataTypeCarsAll] = useState<{ id: number, car_type_name: string, branch_id: number }[]>([]);
     const [loading, setLoading] = useState<boolean>(true); // สถานะ loading
 
     const fetchTypeCars = async () => {
@@ -20,6 +21,23 @@ export const useFetchTypeCar = (branchId: unknown) => {
         }
         setLoading(false); // สิ้นสุดการโหลด
     };
+
+    const fetchTypeCarsAll = async () => {
+        setLoading(true); // เริ่มต้นการโหลด
+        const { data, error } = await supabase
+            .from('type_cars')
+            .select('*')
+            .order('id', { ascending: true });
+
+        if (error) {
+            console.error('Error fetching data from type_cars:', error);
+        } else {
+            setDataTypeCarsAll(data);
+        }
+        setLoading(false); // สิ้นสุดการโหลด
+    };
+
+
 
     useEffect(() => {
         if (branchId) {
@@ -43,5 +61,9 @@ export const useFetchTypeCar = (branchId: unknown) => {
         }
     }, [branchId]); // Re-run when branchId changes
 
-    return { dataTypeCars, loading, fetchTypeCars }; // ส่งสถานะ loading กลับไปด้วย
+    useEffect(() => {
+        fetchTypeCarsAll()
+    }, [])
+
+    return { dataTypeCars, loading, fetchTypeCars, fetchTypeCarsAll, dataTypeCarAll }; // ส่งสถานะ loading กลับไปด้วย
 };

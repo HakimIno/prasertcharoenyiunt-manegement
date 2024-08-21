@@ -1,5 +1,5 @@
 import { Badge, Button, Dialog, Flex, Spinner } from "@radix-ui/themes";
-import React, { useRef } from "preact/compat";
+import React, { useRef, useState } from "preact/compat";
 import { formatFileSize } from "../utils/formatFileSize";
 import { useFileUpload } from "../hooks/useUploadFile";
 import { XMarkIcon } from "@heroicons/react/24/solid";
@@ -16,6 +16,7 @@ interface Props {
 const DialogInput = ({ trigger, title, branchId, typeCarId, fetchFilesWithIcons }: Props) => {
     const { files, handleUpload, loading, setFiles } = useFileUpload();
     const closeDialogRef = useRef<HTMLButtonElement>(null);
+    const [allFileSize, setAllFileSize] = useState(0)
 
     const maxFiles = 10;
     const maxFileSize = 10 * 1024 * 1024; // 10 MB in bytes
@@ -31,7 +32,7 @@ const DialogInput = ({ trigger, title, branchId, typeCarId, fetchFilesWithIcons 
         if (target.files) {
             const selectedFiles = Array.from(target.files) as File[];
             const totalSize = selectedFiles.reduce((acc, file) => acc + file.size, 0) + files.reduce((acc, file) => acc + file.size, 0);
-
+            setAllFileSize(totalSize)
             if (files.length + selectedFiles.length > maxFiles) {
                 toast.error(`คุณสามารถเลือกไฟล์ได้สูงสุด ${maxFiles} ไฟล์`)
                 return;
@@ -71,9 +72,11 @@ const DialogInput = ({ trigger, title, branchId, typeCarId, fetchFilesWithIcons 
             <Dialog.Content maxWidth="600px">
                 <Dialog.Title>{title}</Dialog.Title>
                 <Flex direction="column" gap="2" style={{ maxHeight: "400px", overflowY: "auto" }}>
+
                     <label>
                         <Badge color="blue">คุณสามารถเลือกไฟล์ได้สูงสุด 10 ไฟล์ ขนาดไฟล์รวมกันห้ามเกิน 10 MB</Badge>
                     </label>
+
                     <label>
                         <div className="relative w-full">
                             <input
@@ -90,6 +93,10 @@ const DialogInput = ({ trigger, title, branchId, typeCarId, fetchFilesWithIcons 
                             />
                         </div>
                     </label>
+
+                    {allFileSize !== 0 ? <label >
+                        <Badge color="green">{formatFileSize(allFileSize)}</Badge>
+                    </label> : null}
 
 
                     {files.length > 0 && (

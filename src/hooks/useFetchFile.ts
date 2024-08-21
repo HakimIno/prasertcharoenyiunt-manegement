@@ -19,6 +19,8 @@ export const useFetchFiles = (searchQuery = '', branchId: number | null, typeCar
                 owner,
                 storage_provider,
                 file_id,
+                branch_id,
+                type_car_id,
                 icon (
                     id,
                     icon_url
@@ -82,5 +84,5 @@ export const useFetchFiles = (searchQuery = '', branchId: number | null, typeCar
         };
     }, [searchQuery, branchId, typeCarId]);
 
-    return { files: loading ? cachedFiles : files, loading, fetchFilesWithIcons };
+    return { files: loading ? cachedFiles : files, loading, fetchFilesWithIcons, searchQuery };
 };
