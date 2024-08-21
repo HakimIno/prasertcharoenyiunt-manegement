@@ -96,7 +96,7 @@ export default function FilesPage() {
                 reverseOrder={false}
             />
             <div className="max-w-screen-2xl w-full flex flex-col bg-white my-5 p-10 rounded-xl">
-                <Flex direction="column" gap="2">
+                <Flex direction="column">
                     <Flex align={'center'} gap={"3"}>
                         <button onClick={handleBackClick} className={" p-2 bg-blue-50 rounded-full"}>
                             <ArrowLeftIcon className={"w-6 h-6 text-blue-600"} />
