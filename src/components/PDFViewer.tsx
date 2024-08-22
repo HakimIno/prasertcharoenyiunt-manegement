@@ -1,4 +1,3 @@
-import { Spinner } from '@radix-ui/themes';
 import React, { useEffect, useState } from 'react';
 
 interface PDFViewerProps {
