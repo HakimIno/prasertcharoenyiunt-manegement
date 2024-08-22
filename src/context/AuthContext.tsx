@@ -1,14 +1,17 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import supabase from '../utils/supabase';
 import { Spinner } from '@radix-ui/themes';
+import { Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
+    session: Session | null;
     user: any;
     role: string | null;
     loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
+    session: null,
     user: null,
     role: null,
     loading: true,
@@ -18,6 +21,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [user, setUser] = useState<any>(null);
     const [role, setRole] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [session, setSession] = useState<Session | null>(null);
 
     useEffect(() => {
         const fetchUserRole = async (userId: string) => {
@@ -43,6 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 const currentUser = session?.user ?? null;
+                setSession(session);
                 setUser(currentUser);
 
                 if (currentUser) {
@@ -74,7 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
     }, []);
 
-    const contextValue = useMemo(() => ({ user, role, loading }), [user, role, loading]);
+    const contextValue = useMemo(() => ({ session, user, role, loading }), [user, role, loading]);
 
     return (
         <AuthContext.Provider value={contextValue}>

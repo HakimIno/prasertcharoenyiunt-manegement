@@ -11,6 +11,8 @@ import { useDeleteFile } from '../../../hooks/useDeleteFile';
 import { useGlobalState } from '../../../context/GlobalStateProvider';
 import { useAuth } from '../../../context/AuthContext';
 import toast, { Toaster } from 'react-hot-toast';
+import CustomGalleryModal from '../../../components/CustomGalleryModal';
+import PDFViewer from '../../../components/PDFViewer';
 
 export default function FilesPage() {
     const { branchId, typeCarId } = useParams(); // รับ branchId และ typeCarId จาก URL
@@ -18,6 +20,8 @@ export default function FilesPage() {
     const queryParams = new URLSearchParams(location.search);
     const branchName = queryParams.get('branchName'); // ดึง branchName จาก query parameters
     const typeCarName = queryParams.get('typeCarName'); // ดึง typeCarName จาก query parameters
+
+    const { session } = useAuth()
 
     const [open, setOpen] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
@@ -89,6 +93,30 @@ export default function FilesPage() {
     };
 
 
+    const [selectedFile, setSelectedFile] = useState<string>("");
+    const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+    const [isPDFOpen, setIsPDFOpen] = useState(false);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+
+    // Filter image files
+    const imageFiles = dataFiles.filter(file => {
+        const fileExtension = file.filename.split('.').pop().toLowerCase();
+        return imageExtensions.includes(fileExtension);
+    });
+
+    const handleFileClick = (index: number) => {
+        setCurrentImageIndex(index);
+        setIsGalleryOpen(true);
+    };
+
+    const onClose = () => {
+        setIsGalleryOpen(false)
+        setCurrentImageIndex(0)
+    }
+
+
     return (
         <FoldersContainer className="w-full h-full flex justify-center bg-slate-50">
             <Toaster
@@ -143,56 +171,70 @@ export default function FilesPage() {
                                         </div>
                                     </div>
                                 ) : (
-                                    dataFiles.map(file => (
-                                        <Box key={file.id} className="relative cursor-pointer p-2 rounded-lg hover:bg-slate-50">
-                                            <div className={viewMode === 'grid' ? 'w-40 h-40 flex flex-col items-center justify-center' : 'w-full flex items-center'}>
-                                                {file?.storage_provider === "cloudinary" ? (
-                                                    <img
-                                                        src={`https://res.cloudinary.com/dkm0oeset/image/upload/${file?.file_id}.${file.filename.split('.').pop()}`}
-                                                        alt="iconfolder"
-                                                        className={viewMode === 'grid' ? 'w-1/2 h-1/2 mb-4 rounded-lg' : 'w-14 h-14 mr-4 rounded-lg'}
-                                                    />
-                                                ) : (
-                                                    <img
-                                                        src="https://gpamonnosfwdoxjvyrcw.supabase.co/storage/v1/object/public/media/FIleIcon/file.png"
-                                                        alt="iconfolder"
-                                                        className={viewMode === 'grid' ? 'w-16 h-16 mb-4' : 'w-14 h-14 mr-4'}
-                                                    />
-                                                )}
-                                                <div className="font-sukhumvit font-semibold line-clamp-2 whitespace-normal break-words text-center">
-                                                    {file.filename}
+                                    dataFiles.map((file) => {
+                                        const fileExtension = file.filename.split('.').pop().toLowerCase();
+
+                                        return (
+                                            <Box
+                                                key={file.id}
+                                                className="relative cursor-pointer p-2 rounded-lg hover:bg-slate-50"
+                                                onClick={() => {
+                                                    if (imageExtensions.includes(fileExtension)) {
+                                                        const imageIndex = imageFiles.findIndex(imgFile => imgFile.id === file.id);
+                                                        handleFileClick(imageIndex);
+                                                    } else {
+                                                        setSelectedFile(file?.file_id);
+                                                        setIsPDFOpen(true)
+                                                    }
+                                                }}
+                                            >
+                                                <div className={viewMode === 'grid' ? 'w-40 h-40 flex flex-col items-center justify-center' : 'w-full flex items-center'}>
+                                                    {file?.storage_provider === "cloudinary" ? (
+                                                        <img
+                                                            src={`https://res.cloudinary.com/dkm0oeset/image/upload/${file?.file_id}.${file.filename.split('.').pop()}`}
+                                                            alt="iconfolder"
+                                                            className={viewMode === 'grid' ? 'w-1/2 h-1/2 mb-4 rounded-lg' : 'w-14 h-14 mr-4 rounded-lg'}
+                                                        />
+                                                    ) : (
+                                                        <img
+                                                            src="https://gpamonnosfwdoxjvyrcw.supabase.co/storage/v1/object/public/media/FIleIcon/file.png"
+                                                            alt="iconfolder"
+                                                            className={viewMode === 'grid' ? 'w-16 h-16 mb-4' : 'w-14 h-14 mr-4'}
+                                                        />
+                                                    )}
+                                                    <div className="font-sukhumvit font-semibold line-clamp-2 whitespace-normal break-words text-center">
+                                                        {file.filename}
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            {(role === "superadmin" || role === "admin") && (
-                                                <Flex gap="2" ml="3" className={`absolute  right-2 ${viewMode === 'grid' ? "top-2" : "top-5"} `}>
-                                                    <DropdownMenu.Root>
-                                                        <DropdownMenu.Trigger asChild>
-                                                            <EllipsisVerticalIcon className="w-6 h-6 text-gray-400" />
-                                                        </DropdownMenu.Trigger>
-                                                        <DropdownMenu.Content variant="soft" color="gray">
-                                                            <DropdownMenu.Item onSelect={() => { setSelectedId(file.id); setFileItem(file); setOpenEdit(true); }}>
-                                                                <div className="flex flex-row gap-5 items-center justify-between">
-                                                                    <PencilIcon className="w-3 h-3" />
-                                                                    <span className="font-medium">แก้ไข</span>
-                                                                </div>
-                                                            </DropdownMenu.Item>
-                                                            <DropdownMenu.Separator />
-                                                            <DropdownMenu.Item color="red" onSelect={() => { setSelectedId(file.id); setFileItem(file); setOpen(true); }}>
-                                                                <div className="flex flex-row gap-5 items-center justify-between">
-                                                                    <TrashIcon className="w-3 h-3 text-red-600" />
-                                                                    <span className="font-medium">ลบ</span>
-                                                                </div>
-                                                            </DropdownMenu.Item>
-                                                        </DropdownMenu.Content>
-                                                    </DropdownMenu.Root>
-                                                </Flex>
-                                            )}
+                                                {(role === "superadmin" || role === "admin") && (
+                                                    <Flex gap="2" ml="3" className={`absolute  right-2 ${viewMode === 'grid' ? "top-2" : "top-5"} `}>
+                                                        <DropdownMenu.Root>
+                                                            <DropdownMenu.Trigger asChild>
+                                                                <EllipsisVerticalIcon className="w-6 h-6 text-gray-400" />
+                                                            </DropdownMenu.Trigger>
+                                                            <DropdownMenu.Content variant="soft" color="gray">
+                                                                <DropdownMenu.Item onSelect={() => { setSelectedId(file.id); setFileItem(file); setOpenEdit(true); }}>
+                                                                    <div className="flex flex-row gap-5 items-center justify-between">
+                                                                        <PencilIcon className="w-3 h-3" />
+                                                                        <span className="font-medium">แก้ไข</span>
+                                                                    </div>
+                                                                </DropdownMenu.Item>
+                                                                <DropdownMenu.Separator />
+                                                                <DropdownMenu.Item color="red" onSelect={() => { setSelectedId(file.id); setFileItem(file); setOpen(true); }}>
+                                                                    <div className="flex flex-row gap-5 items-center justify-between">
+                                                                        <TrashIcon className="w-3 h-3 text-red-600" />
+                                                                        <span className="font-medium">ลบ</span>
+                                                                    </div>
+                                                                </DropdownMenu.Item>
+                                                            </DropdownMenu.Content>
+                                                        </DropdownMenu.Root>
+                                                    </Flex>
+                                                )}
+                                            </Box>
 
-
-
-                                        </Box>
-                                    ))
+                                        )
+                                    })
                                 )
                                 }
                             </>
@@ -267,6 +309,35 @@ export default function FilesPage() {
                     </Flex>
                 </Dialog.Content>
             </Dialog.Root>
+
+
+            {/* Image Gallery Dialog */}
+            <CustomGalleryModal
+                isOpen={isGalleryOpen}
+                onClose={onClose}
+                imageFiles={imageFiles}
+                currentIndex={currentImageIndex}
+            />
+
+
+            {isPDFOpen && selectedFile && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+                    onClick={() => setIsPDFOpen(false)}
+                >
+                    <div
+                        className="relative max-w-[50%] max-h-[95vh] bg-black rounded-lg overflow-hidden shadow-lg"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className=" overflow-hidden flex justify-center items-center">
+                            <PDFViewer fileId={selectedFile ?? ""} accessToken={session?.access_token ?? ""} refreshToken={session?.refresh_token ?? ""} />
+                        </div>
+                    </div>
+
+                    <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                    </svg>
+                </div>
+            )}
         </FoldersContainer>
     );
 }
