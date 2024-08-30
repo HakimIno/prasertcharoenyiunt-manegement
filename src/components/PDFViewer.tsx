@@ -11,7 +11,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ fileId, accessToken, refreshToken
 
     useEffect(() => {
         const downloadPdf = async () => {
-            const apiEndpoint = `http://localhost:8787/download?fileId=${fileId}`;
+            const apiEndpoint = `https://prasert-upload-to-dive.prasertjarernyonte.workers.dev/download?fileId=${fileId}`;
 
             try {
                 const response = await fetch(apiEndpoint, {
