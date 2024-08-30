@@ -50,7 +50,7 @@ export default function CustomGalleryModal({
             onClick={onClose}  // Close modal when overlay is clicked
         >
             <div
-                className="relative w-3/4 max-w-6xl max-h-[70vh] bg-black rounded-lg overflow-hidden shadow-lg"
+                className="relative w-3/4 max-w-7xl max-h-[80%] bg-black rounded-lg overflow-hidden shadow-lg"
                 onClick={(e) => e.stopPropagation()} // Prevent overlay click when clicking inside the modal
             >
                 {/* Close Button */}
@@ -76,7 +76,7 @@ export default function CustomGalleryModal({
                 </div>
 
                 {/* Image Display */}
-                <div className="flex items-center justify-center w-full h-full">
+                <div className="flex items-center justify-center w-full h-[80%] ">
                     {loading && (
                         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75 z-20">
                             <Spinner size={"3"} />
@@ -86,12 +86,15 @@ export default function CustomGalleryModal({
                         <img
                             src={`https://res.cloudinary.com/dkm0oeset/image/upload/${imageFiles[currentImageIndex].file_id}.${imageFiles[currentImageIndex].filename.split('.').pop()}`}
                             alt="Enlarged view"
-                            className="max-w-full max-h-full object-contain"
+                            className="w-full h-[600px] object-contain"
                             onLoad={handleImageLoad}
                         />
                     ) : (
                         <p className="text-white">No image available</p>
                     )}
+                </div>
+                <div className="w-full h-[100px]">
+
                 </div>
 
                 {/* Thumbnails */}
