@@ -2,9 +2,9 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Box, Button, Dialog, DropdownMenu, Flex, Spinner, Text } from '@radix-ui/themes';
 import { FoldersContainer } from '../Folders/Folders.styles';
 import { useFetchFiles } from '../../../hooks/useFetchFile';
-import { ArrowLeftIcon, ChevronRightIcon, EllipsisVerticalIcon, FaceFrownIcon, PencilIcon, PlusCircleIcon, TrashIcon, } from '@heroicons/react/24/solid';
+import { ArchiveBoxIcon, ArrowLeftIcon, ChevronRightIcon, EllipsisVerticalIcon, FaceFrownIcon, PencilIcon, PlusCircleIcon, TrashIcon, } from '@heroicons/react/24/solid';
 import { QueueListIcon, Squares2X2Icon } from '@heroicons/react/24/solid';
-import { useState } from 'preact/hooks';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 import DialogInput from '../../../components/Dialog';
 import { useUpdateFile } from '../../../hooks/useUpdateFile';
 import { useDeleteFile } from '../../../hooks/useDeleteFile';
@@ -13,6 +13,22 @@ import { useAuth } from '../../../context/AuthContext';
 import toast, { Toaster } from 'react-hot-toast';
 import CustomGalleryModal from '../../../components/CustomGalleryModal';
 import PDFViewer from '../../../components/PDFViewer';
+import React from 'preact/compat';
+import { MoveFileDialog } from '../../../components/MoveFileDialog';
+
+
+interface FileItem {
+    filename: string;
+    file_id: string;
+    storage_provider: string;
+    id: number;
+}
+interface CloudinaryImageProps {
+    file: FileItem;
+    viewMode: 'grid' | 'list';
+    quality?: string;
+    width?: number;
+}
 
 export default function FilesPage() {
     const { branchId, typeCarId } = useParams(); // รับ branchId และ typeCarId จาก URL
@@ -20,6 +36,7 @@ export default function FilesPage() {
     const queryParams = new URLSearchParams(location.search);
     const branchName = queryParams.get('branchName'); // ดึง branchName จาก query parameters
     const typeCarName = queryParams.get('typeCarName'); // ดึง typeCarName จาก query parameters
+
 
     const { session } = useAuth()
 
@@ -92,7 +109,8 @@ export default function FilesPage() {
         navigate(-1); // นำทางกลับไปหน้าก่อนหน้านี้
     };
 
-
+    const [selectedFilex, setSelectedFilex] = useState<any | null>(null);
+    const [openMoveFile, setOpenMoveFile] = useState(false);
     const [selectedFile, setSelectedFile] = useState<string>("");
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
     const [isPDFOpen, setIsPDFOpen] = useState(false);
@@ -115,6 +133,62 @@ export default function FilesPage() {
         setIsGalleryOpen(false)
         setCurrentImageIndex(0)
     }
+
+
+    const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
+        file,
+        viewMode,
+        quality = "auto",
+        width = 300,
+    }) => {
+        const [isVisible, setIsVisible] = useState(false);
+
+        const imageUrl = useMemo(() =>
+            `https://res.cloudinary.com/dkm0oeset/image/upload/c_scale,w_${width},q_${quality},f_auto/${file?.file_id}.${file.filename.split('.').pop()}`,
+            [file, width, quality]
+        );
+
+        const thumbnailUrl = useMemo(() =>
+            `https://res.cloudinary.com/dkm0oeset/image/upload/c_thumb,w_200,g_face,f_auto/${file?.file_id}`,
+            [file]
+        );
+
+        const placeholder = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='#eee'/></svg>";
+
+        const ref = React.useRef<HTMLImageElement>(null);
+
+        useEffect(() => {
+            const observer = new IntersectionObserver(
+                ([entry]) => {
+                    if (entry.isIntersecting) {
+                        setIsVisible(true);
+                        observer.disconnect();
+                    }
+                },
+                { threshold: 0.1 }
+            );
+            if (ref.current) observer.observe(ref.current);
+            return () => observer.disconnect();
+        }, []);
+
+        return (
+            <img
+                ref={ref}
+                src={isVisible ? (viewMode === "grid" ? thumbnailUrl : imageUrl) : placeholder}
+                loading="lazy"
+                alt={file.filename}
+                className={
+                    viewMode === "grid"
+                        ? "w-1/2 h-1/2 mb-4 rounded-lg"
+                        : "w-14 h-14 mr-4 rounded-lg"
+                }
+                onError={(e: any) => {
+                    e.currentTarget.src =
+                        "https://gpamonnosfwdoxjvyrcw.supabase.co/storage/v1/object/public/media/FIleIcon/file.png";
+                }}
+            />
+        );
+    };
 
 
     return (
@@ -190,11 +264,7 @@ export default function FilesPage() {
                                             >
                                                 <div className={viewMode === 'grid' ? 'w-40 h-40 flex flex-col items-center justify-center' : 'w-full flex items-center'}>
                                                     {file?.storage_provider === "cloudinary" ? (
-                                                        <img
-                                                            src={`https://res.cloudinary.com/dkm0oeset/image/upload/${file?.file_id}.${file.filename.split('.').pop()}`}
-                                                            alt="iconfolder"
-                                                            className={viewMode === 'grid' ? 'w-1/2 h-1/2 mb-4 rounded-lg' : 'w-14 h-14 mr-4 rounded-lg'}
-                                                        />
+                                                        <CloudinaryImage viewMode={viewMode} file={file} />
                                                     ) : (
                                                         <img
                                                             src="https://gpamonnosfwdoxjvyrcw.supabase.co/storage/v1/object/public/media/FIleIcon/file.png"
@@ -218,6 +288,17 @@ export default function FilesPage() {
                                                                     <div className="flex flex-row gap-5 items-center justify-between">
                                                                         <PencilIcon className="w-3 h-3" />
                                                                         <span className="font-medium">แก้ไข</span>
+                                                                    </div>
+                                                                </DropdownMenu.Item>
+                                                                <DropdownMenu.Item
+                                                                    onSelect={() => {
+                                                                        setSelectedFilex(file);
+                                                                        setOpenMoveFile(true);
+                                                                    }}
+                                                                >
+                                                                    <div className="flex flex-row gap-5 items-center justify-between">
+                                                                        <ArchiveBoxIcon className="w-3 h-3" />
+                                                                        <span className="font-medium">ย้ายไฟล์</span>
                                                                     </div>
                                                                 </DropdownMenu.Item>
                                                                 <DropdownMenu.Separator />
@@ -317,6 +398,16 @@ export default function FilesPage() {
                 onClose={onClose}
                 imageFiles={imageFiles}
                 currentIndex={currentImageIndex}
+            />
+
+            <MoveFileDialog
+                open={openMoveFile}
+                setOpen={setOpenMoveFile}
+                selectedFile={selectedFilex}
+                onMoveSuccess={() => {
+                    fetchFilesWithIcons();
+                    toast.success('ย้ายไฟล์เรียบร้อยแล้ว');
+                }}
             />
 
 

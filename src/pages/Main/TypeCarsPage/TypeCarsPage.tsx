@@ -4,12 +4,13 @@ import { useFetchTypeCar } from '../../../hooks/useFetchTypeCar';
 import { Box, Button, Dialog, DropdownMenu, Flex, Spinner, Text } from '@radix-ui/themes';
 import { FoldersContainer } from '../Folders/Folders.styles';
 import { useCreateTypeCar } from '../../../hooks/useCreateTypeCar';
-import { ArrowLeftIcon, ChevronRightIcon, EllipsisVerticalIcon, FaceFrownIcon, FolderPlusIcon, PencilIcon, QueueListIcon, Squares2X2Icon, TrashIcon } from '@heroicons/react/24/solid';
+import { ArrowLeftIcon, ChevronRightIcon, EllipsisVerticalIcon, FaceFrownIcon, FolderPlusIcon, PencilIcon, QueueListIcon, Squares2X2Icon, TrashIcon, ArchiveBoxIcon } from '@heroicons/react/24/solid';
 import { useGlobalState } from '../../../context/GlobalStateProvider';
 import toast, { Toaster } from 'react-hot-toast';
 import { useUpdateTypeCar } from '../../../hooks/useUpdateTypeCar';
 import { useDeleteTypeCar } from '../../../hooks/useDeleteTypeCar';
 import { useAuth } from '../../../context/AuthContext';
+import { MoveTypeCarDialog } from '../../../components/MoveTypeCarDialog';
 
 export default function TypeCarsPage() {
     const { branchId } = useParams(); // รับ branchId จาก URL
@@ -42,6 +43,8 @@ export default function TypeCarsPage() {
     const [typeCarId, setTypeCarId] = useState<number>(0)
     const [open, setOpen] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
+    const [openMoveFolder, setOpenMoveFolder] = useState(false);
+    const [selectedTypeCarName, setSelectedTypeCarName] = useState<string>('');
 
     const handleCreateTypeCar = async () => {
         if (newTypeCarName.trim() && branchId) {
@@ -86,6 +89,12 @@ export default function TypeCarsPage() {
     };
 
     const handleChange = (e: any) => setNewTypeCar(e.target.value);
+
+    const handleMoveClick = (typeCarId: number, typeCarName: string) => {
+        setTypeCarId(typeCarId);
+        setSelectedTypeCarName(typeCarName);
+        setOpenMoveFolder(true);
+    };
 
     const { role } = useAuth();
 
@@ -213,6 +222,12 @@ export default function TypeCarsPage() {
                                                                     <span className="font-medium">แก้ไข</span>
                                                                 </div>
                                                             </DropdownMenu.Item>
+                                                            <DropdownMenu.Item onSelect={() => handleMoveClick(typeCar.id, typeCar.car_type_name)}>
+                                                                <div className="flex flex-row gap-5 items-center justify-between">
+                                                                    <ArchiveBoxIcon className="w-3 h-3" />
+                                                                    <span className="font-medium">ย้ายสาขา</span>
+                                                                </div>
+                                                            </DropdownMenu.Item>
                                                             <DropdownMenu.Separator />
                                                             <DropdownMenu.Item color="red" onSelect={() => { setTypeCarId(typeCar.id); setOpen(true); }}>
                                                                 <div className="flex flex-row gap-5 items-center justify-between">
@@ -302,6 +317,19 @@ export default function TypeCarsPage() {
                     </Flex>
                 </Dialog.Content>
             </Dialog.Root>
+
+            <MoveTypeCarDialog
+                open={openMoveFolder}
+                setOpen={setOpenMoveFolder}
+                typeCarId={typeCarId}
+                currentBranchId={Number(branchId)}
+                currentBranchName={branchName}
+                selectedTypeCarName={selectedTypeCarName}
+                onMoveSuccess={() => {
+                    fetchTypeCars();
+                }}
+            />
+
         </FoldersContainer>
     );
 }
